@@ -6,6 +6,7 @@
         <item name="android:fontFamily">@font/sora_semibold</item>
         <item name="android:padding">16dp</item>
         <item name="android:letterSpacing">-0.015</item>
+        <item name="android:textSize">18dp</item>
     </style>
     <style name="input_form_outline">
         <item name="android:background">@drawable/form_outline</item>
