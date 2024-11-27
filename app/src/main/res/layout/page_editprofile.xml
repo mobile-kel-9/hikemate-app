@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Edit Profile"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:fontFamily="@font/sora_semibold"
+        android:layout_marginBottom="16dp" />
+
+    <ImageView
+        android:id="@+id/profile_picture"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_profile_placeholder"
+        android:scaleType="centerCrop"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:textSize="16sp"
+        android:layout_marginBottom="4dp"
+        android:fontFamily="@font/sora_semibold" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:boxBackgroundMode="none"
+    app:hintEnabled="false">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/username_input"
+            style="@style/TextInputEditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Username"
+            android:padding="12dp"
+            android:textSize="12sp" />
+</com.google.android.material.textfield.TextInputLayout>
+
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Email"
+android:textSize="16sp"
+android:layout_marginTop="16dp"
+android:layout_marginBottom="4dp"
+android:fontFamily="@font/sora_semibold" />
+
+<com.google.android.material.textfield.TextInputLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+app:boxBackgroundMode="none"
+    app:hintEnabled="false">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/email_input"
+        style="@style/TextInputEditTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Email"
+        android:padding="12dp"
+        android:textSize="12sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Password"
+android:textSize="16sp"
+android:layout_marginTop="16dp"
+android:layout_marginBottom="4dp"
+android:fontFamily="@font/sora_semibold" />
+
+<com.google.android.material.textfield.TextInputLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+app:boxBackgroundMode="none"
+    app:hintEnabled="false">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/password_input"
+        style="@style/TextInputEditTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:padding="12dp"
+        android:textSize="12sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Date of Birth"
+android:textSize="16sp"
+android:layout_marginTop="16dp"
+android:layout_marginBottom="4dp"
+android:fontFamily="@font/sora_semibold" />
+
+<com.google.android.material.textfield.TextInputLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+app:boxBackgroundMode="none"
+    app:hintEnabled="false">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/dob_input"
+        style="@style/TextInputEditTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Date of Birth"
+        android:inputType="date"
+        android:padding="12dp"
+        android:textSize="12sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+<TextView
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Country/Region"
+android:textSize="16sp"
+android:layout_marginTop="16dp"
+android:layout_marginBottom="4dp"
+android:fontFamily="@font/sora_semibold" />
+
+<com.google.android.material.textfield.TextInputLayout
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+app:boxBackgroundMode="none"
+    app:hintEnabled="false">
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/region_input"
+        style="@style/TextInputEditTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="Country/Region"
+        android:padding="12dp"
+        android:textSize="12sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/submit_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:text="Submit"
+        app:cornerRadius="8dp" />
+
+    </LinearLayout>
