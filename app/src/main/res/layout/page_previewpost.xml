@@ -34,10 +34,7 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="0dp"
-            android:layout_marginTop="0dp"
-            android:background="@drawable/card_preview"
-            android:padding="0dp">
+            android:background="@drawable/card_preview">
 
             <LinearLayout
                 android:id="@+id/linearLayout4"
