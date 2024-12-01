@@ -52,18 +52,18 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
-        android:id="@+id/username_label"
+        android:id="@+id/email_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:fontFamily="@font/sora_semibold"
-        android:text="Username"
+        android:text="Email"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/name_input_layout" />
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/username_input_layout"
+        android:id="@+id/email_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -71,16 +71,15 @@
         app:hintEnabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/username_label">
+        app:layout_constraintTop_toBottomOf="@id/email_label">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/username_input"
+            android:id="@+id/email_input"
             style="@style/TextInputEditTextStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
-            android:hint="Enter Username"
-            android:inputType="textPassword"
+            android:hint="Enter Email"
             android:padding="12dp"
             android:textSize="14sp" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -94,7 +93,7 @@
         android:text="Password"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/username_input_layout" />
+        app:layout_constraintTop_toBottomOf="@id/email_input_layout" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/password_input_layout"
@@ -146,12 +145,12 @@
             style="@style/TextInputEditTextStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
+            android:focusable="false"
             android:hint="Enter your Date of Birth"
-            android:inputType="textPassword"
             android:padding="12dp"
             android:textSize="14sp" />
     </com.google.android.material.textfield.TextInputLayout>
+
 
     <TextView
         android:id="@+id/countryregion_label"
@@ -182,7 +181,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
             android:hint="Enter your Country and Region"
-            android:inputType="textPassword"
             android:padding="12dp"
             android:textSize="14sp" />
     </com.google.android.material.textfield.TextInputLayout>

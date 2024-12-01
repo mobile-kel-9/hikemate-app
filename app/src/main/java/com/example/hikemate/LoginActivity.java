@@ -1,5 +1,6 @@
 package com.example.hikemate;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,13 +32,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.page_login);
 
-        // Initialize UI components
         usernameInput = findViewById(R.id.first_input);
         passwordInput = findViewById(R.id.second_input);
         loginButton = findViewById(R.id.submit_button);
         registerText = findViewById(R.id.register_text);
 
-        // Set listeners
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,7 +47,9 @@ public class LoginActivity extends AppCompatActivity {
         registerText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginActivity.this, "Navigate to Register Screen", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                startActivity(intent);
+                finish();
             }
         });
     }
@@ -64,7 +65,6 @@ public class LoginActivity extends AppCompatActivity {
 
         LoginRequest loginRequest = new LoginRequest(email, password);
 
-        // Call the API
         AuthApi api = RetrofitClient.getInstance().create(AuthApi.class);
         api.login(loginRequest).enqueue(new Callback<LoginResponse>() {
             @Override
@@ -75,7 +75,6 @@ public class LoginActivity extends AppCompatActivity {
                         String accessToken = loginResponse.getData().getAccessToken();
                         Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
                         Log.d("LoginActivity", "Access Token: " + accessToken);
-                        // Navigate to the next screen
                     } else {
                         Toast.makeText(LoginActivity.this, loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
                     }

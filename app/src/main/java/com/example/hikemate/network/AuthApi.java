@@ -15,7 +15,7 @@ public interface AuthApi {
     @POST("auth/login")
     Call<LoginResponse> login(@Body LoginRequest loginRequest);
 
-    @POST("register")
+    @POST("auth/register")
     Call<RegisterResponse> register(@Body RegisterRequest registerRequest);
 
     @GET("me")
