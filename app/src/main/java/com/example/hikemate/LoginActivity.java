@@ -75,6 +75,9 @@ public class LoginActivity extends AppCompatActivity {
                         String accessToken = loginResponse.getData().getAccessToken();
                         Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
                         Log.d("LoginActivity", "Access Token: " + accessToken);
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
                     } else {
                         Toast.makeText(LoginActivity.this, loginResponse.getMessage(), Toast.LENGTH_SHORT).show();
                     }

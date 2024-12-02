@@ -40,12 +40,12 @@ public class RegisterActivity extends AppCompatActivity {
         nameInput = findViewById(R.id.name_input);
         emailInput = findViewById(R.id.email_input);
         passwordInput = findViewById(R.id.password_input);
-//        dobInput = findViewById(R.id.dateofbirth_input);
+        dobInput = findViewById(R.id.dateofbirth_input);
         countryInput = findViewById(R.id.countryregion_input);
         submitButton = findViewById(R.id.submit_button);
         registerText = findViewById(R.id.register_text);
 
-//        dobInput.setOnClickListener(v -> showDatePickerDialog());
+        dobInput.setOnClickListener(v -> showDatePickerDialog());
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,32 +64,37 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-//    private void showDatePickerDialog() {
-//        Calendar calendar = Calendar.getInstance();
-//        int year = calendar.get(Calendar.YEAR);
-//        int month = calendar.get(Calendar.MONTH);
-//        int day = calendar.get(Calendar.DAY_OF_MONTH);
-//
-//        DatePickerDialog datePickerDialog = new DatePickerDialog(
-//                RegisterActivity.this,
-//                (view, selectedYear, selectedMonth, selectedDay) -> {
-//                    String formattedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
-//                    dobInput.setText(formattedDate);
-//                },
-//                year,
-//                month,
-//                day
-//        );
-//
-//        datePickerDialog.show();
-//    }
+    private void showDatePickerDialog() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                RegisterActivity.this,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    String formattedDate = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
+                    dobInput.setText(formattedDate);
+                },
+                year,
+                month,
+                day
+        );
+
+        datePickerDialog.show();
+    }
 
     private void handleRegister() {
-        String name = "Duljekkk";
-        String email = "duljek29@gmail.com";
-        String password = "lorem";
-        String birth_date = "2024-12-10";
-        String country = "Indonesia";
+//        String name = "Duljekkk";
+//        String email = "duljek29@gmail.com";
+//        String password = "lorem";
+//        String birth_date = "2024-12-10";
+//        String country = "Indonesia";
+        String name = nameInput.getText().toString().trim();
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString();
+        String birth_date = dobInput.getText().toString().trim();
+        String country = countryInput.getText().toString().trim();
 
         if (name.isEmpty() || email.isEmpty() || password.isEmpty() || birth_date.isEmpty() || country.isEmpty()) {
             Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
@@ -107,7 +112,7 @@ public class RegisterActivity extends AppCompatActivity {
         Log.d("RegisterActivity", "Name: " + name);
         Log.d("RegisterActivity", "Email: " + email);
         Log.d("RegisterActivity", "Password: " + password);
-        Log.d("RegisterActivity", "DOB: " + birth_date); // This should now be in ISO 8601 format
+        Log.d("RegisterActivity", "DOB: " + birth_date);
         Log.d("RegisterActivity", "Country: " + country);
 
 
@@ -121,7 +126,6 @@ public class RegisterActivity extends AppCompatActivity {
         call.enqueue(new Callback<RegisterResponse>() {
             @Override
             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
-                // Log response details
                 Log.d("RegisterActivity", "Response Code: " + response.code());
                 Log.d("RegisterActivity", "Response Message: " + response.message());
 
@@ -147,7 +151,6 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<RegisterResponse> call, Throwable t) {
-                // Log error details
                 Log.d("RegisterActivity", "Error: " + t.getMessage());
                 Toast.makeText(RegisterActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
