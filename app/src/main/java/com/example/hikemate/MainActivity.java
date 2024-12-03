@@ -2,26 +2,27 @@ package com.example.hikemate;
 
 import android.os.Bundle;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.example.hikemate.databinding.ActivityMainBinding;
 
-import com.example.hikemate.network.RetrofitClient;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private ActivityMainBinding binding;
+    private FallDetection fallDetection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+//        Button altitudeButton = findViewById(R.id.button_altitude);
+//
+//        altitudeButton.setOnClickListener(view -> {
+//            Intent intent = new Intent(MainActivity.this, BarometerAltitude.class);
+//            startActivity(intent);
+//            finish();
+//        });
 
 //        binding = ActivityMainBinding.inflate(getLayoutInflater());
 //        setContentView(binding.getRoot());
@@ -35,9 +36,18 @@ public class MainActivity extends AppCompatActivity {
 //        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 //        NavigationUI.setupWithNavController(binding.navView, navController);
-
-        // Test connection with backend
-        RetrofitClient.testLogin();
+        fallDetection = new FallDetection(this);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fallDetection.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        fallDetection.stop();
+    }
 }

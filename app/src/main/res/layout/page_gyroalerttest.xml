@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/alert_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sudden movement detected!"
+        android:textSize="20sp"
+        android:fontFamily="@font/sora_regular"
+        android:textColor="@color/black_900"
+        android:gravity="center" />
+
+    <Button
+        android:id="@+id/back_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
+        android:text="Back to Main Menu"
+        android:padding="16dp"
+        android:layout_gravity="center" />
+
+</LinearLayout>
