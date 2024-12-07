@@ -1,6 +1,10 @@
 package com.example.hikemate;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -11,11 +15,21 @@ public class MainActivity extends AppCompatActivity{
     private ActivityMainBinding binding;
     private FallDetection fallDetection;
 
+    private Button logOutButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        logOutButton = findViewById(R.id.logout_button);
+
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleLogout();
+            }
+        });
 //        Button altitudeButton = findViewById(R.id.button_altitude);
 //
 //        altitudeButton.setOnClickListener(view -> {
@@ -37,6 +51,17 @@ public class MainActivity extends AppCompatActivity{
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 //        NavigationUI.setupWithNavController(binding.navView, navController);
         fallDetection = new FallDetection(this);
+    }
+
+    private void handleLogout() {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear(); // Clears all stored data
+        editor.apply();
+
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     @Override
