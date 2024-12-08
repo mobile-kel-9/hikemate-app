@@ -3,12 +3,26 @@ package com.example.hikemate;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.hikemate.database.DatabaseHelper;
 import com.example.hikemate.databinding.ActivityMainBinding;
+import com.example.hikemate.model.HikeSpot;
+import com.example.hikemate.model.HikeSpotResponse;
+import com.example.hikemate.network.AuthApi;
+import com.example.hikemate.network.RetrofitClient;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -30,14 +44,6 @@ public class MainActivity extends AppCompatActivity{
                 handleLogout();
             }
         });
-//        Button altitudeButton = findViewById(R.id.button_altitude);
-//
-//        altitudeButton.setOnClickListener(view -> {
-//            Intent intent = new Intent(MainActivity.this, BarometerAltitude.class);
-//            startActivity(intent);
-//            finish();
-//        });
-
 //        binding = ActivityMainBinding.inflate(getLayoutInflater());
 //        setContentView(binding.getRoot());
 //
@@ -51,17 +57,55 @@ public class MainActivity extends AppCompatActivity{
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 //        NavigationUI.setupWithNavController(binding.navView, navController);
         fallDetection = new FallDetection(this);
+
+        fetchAndStoreHikeSpots();
     }
 
     private void handleLogout() {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear(); // Clears all stored data
+        editor.clear();
         editor.apply();
 
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void fetchAndStoreHikeSpots() {
+        AuthApi AuthApi = RetrofitClient.getInstance().create(AuthApi.class);
+
+        String accessToken = "Bearer " + getAccessTokenFromSharedPreferences();
+        Call<HikeSpotResponse> call = AuthApi.getHikeSpots(accessToken);
+
+        call.enqueue(new Callback<HikeSpotResponse>() {
+            @Override
+            public void onResponse(Call<HikeSpotResponse> call, Response<HikeSpotResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<HikeSpot> hikeSpots = response.body().getData();
+                    
+                    DatabaseHelper dbHelper = new DatabaseHelper(MainActivity.this);
+
+                    for (HikeSpot hikeSpot : hikeSpots) {
+                        dbHelper.insertHikeSpot(hikeSpot);
+                    }
+
+                    Log.d("Database", "Hike spots saved successfully");
+                } else {
+                    Log.e("API Error", "Failed to fetch data: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<HikeSpotResponse> call, Throwable t) {
+                Log.e("Network Error", "Failed to fetch data: " + t.getMessage());
+            }
+        });
+    }
+
+    private String getAccessTokenFromSharedPreferences() {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        return sharedPreferences.getString("accessToken", "");
     }
 
     @Override
