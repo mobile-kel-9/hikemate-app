@@ -2,12 +2,16 @@ package com.example.hikemate;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.Manifest;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.hikemate.database.DatabaseHelper;
 import com.example.hikemate.databinding.ActivityMainBinding;
@@ -15,6 +19,8 @@ import com.example.hikemate.model.HikeSpot;
 import com.example.hikemate.model.HikeSpotResponse;
 import com.example.hikemate.network.AuthApi;
 import com.example.hikemate.network.RetrofitClient;
+import com.example.hikemate.services.LocationService;
+import com.example.hikemate.utils.LocationUtils;
 
 import java.util.List;
 
@@ -29,6 +35,8 @@ public class MainActivity extends AppCompatActivity{
     private ActivityMainBinding binding;
     private FallDetection fallDetection;
 
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+
     private Button logOutButton;
 
     @Override
@@ -37,6 +45,16 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         logOutButton = findViewById(R.id.logout_button);
+
+        fetchAndStoreHikeSpots();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Request permission if not granted
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            // Permission already granted, proceed with fetching location
+            fetchLocation();
+        }
 
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,8 +75,6 @@ public class MainActivity extends AppCompatActivity{
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 //        NavigationUI.setupWithNavController(binding.navView, navController);
         fallDetection = new FallDetection(this);
-
-        fetchAndStoreHikeSpots();
     }
 
     private void handleLogout() {
@@ -83,7 +99,7 @@ public class MainActivity extends AppCompatActivity{
             public void onResponse(Call<HikeSpotResponse> call, Response<HikeSpotResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<HikeSpot> hikeSpots = response.body().getData();
-                    
+
                     DatabaseHelper dbHelper = new DatabaseHelper(MainActivity.this);
 
                     for (HikeSpot hikeSpot : hikeSpots) {
@@ -91,6 +107,7 @@ public class MainActivity extends AppCompatActivity{
                     }
 
                     Log.d("Database", "Hike spots saved successfully");
+//                    logAllHikeSpots();
                 } else {
                     Log.e("API Error", "Failed to fetch data: " + response.message());
                 }
@@ -106,6 +123,37 @@ public class MainActivity extends AppCompatActivity{
     private String getAccessTokenFromSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         return sharedPreferences.getString("accessToken", "");
+    }
+
+//    public void logAllHikeSpots() {
+//        DatabaseHelper dbHelper = new DatabaseHelper(this);
+//        List<HikeSpot> hikeSpots = dbHelper.getAllHikeSpots();
+//
+//        for (HikeSpot hikeSpot : hikeSpots) {
+//            Log.d("HikeSpot", "ID: " + hikeSpot.getId() +
+//                    ", Place: " + hikeSpot.getPlace() +
+//                    ", Latitude: " + hikeSpot.getLat() +
+//                    ", Longitude: " + hikeSpot.getLong() +
+//                    ", Chat ID: " + hikeSpot.getChat_id() +
+//                    ", Phone Number: " + hikeSpot.getPhone_number());
+//        }
+//    }
+
+    private void fetchLocation() {
+        LocationService locationService = new LocationService(this);
+        locationService.getCurrentLocation(new LocationService.OnLocationFetchedListener() {
+            @Override
+            public void onLocationFetched(double latitude, double longitude) {
+                Log.d("CurrentLocation", "Latitude: " + latitude + ", Longitude: " + longitude);
+                LocationUtils locationUtils = new LocationUtils(MainActivity.this);  // MainActivity context
+                locationUtils.checkProximityToHikeSpots(latitude, longitude);  // Call the method
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.e("LocationError", errorMessage);
+            }
+        });
     }
 
     @Override
