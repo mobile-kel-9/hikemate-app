@@ -36,7 +36,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/geo_alt"
-            android:tint="@color/white"/>
+            app:tint="@color/white"/>
 
         <TextView
             android:id="@+id/tvLocation"
@@ -146,7 +146,7 @@
         android:id="@+id/tvHiMate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="12dp"
         android:text="HiMate!"
         android:textColor="@color/white"
         android:textSize="18sp"
@@ -161,7 +161,9 @@
         android:layout_width="413dp"
         android:layout_height="291dp"
         android:fillViewport="true"
+        android:padding="2dp"
         app:layout_constraintTop_toBottomOf="@id/tvHiMate"
+        app:layout_constraintEnd_toEndOf="@id/bottomNavigation"
         tools:layout_editor_absoluteY="440dp">
 
         <GridLayout
