@@ -10,15 +10,21 @@ import java.util.List;
 
 public class LocationUtils {
 
-    private static final double PROXIMITY_RADIUS = 50.0; // 50 meters
-
+    private static final double PROXIMITY_RADIUS = 50.0;
     private Context context;
 
-    // Constructor to pass context from MainActivity (or wherever it's being used)
     public LocationUtils(Context context) {
         this.context = context;
     }
-    public void checkProximityToHikeSpots(double currentLat, double currentLng) {
+
+    // Define the listener interface
+    public interface OnProximityAlertListener {
+        void onProximityAlertSaved(String hikeSpotName); // Triggered when a proximity alert is successfully saved
+        void onError(String errorMessage);               // Triggered if saving fails
+    }
+
+    // Check proximity to hike spots and save temporary proximity alert if within radius
+    public void checkProximityToHikeSpots(double currentLat, double currentLng, String chatId, OnProximityAlertListener listener) {
         DatabaseHelper dbHelper = new DatabaseHelper(context);
         List<HikeSpot> hikeSpots = dbHelper.getAllHikeSpots();
 
@@ -30,9 +36,30 @@ public class LocationUtils {
 
             if (distance <= PROXIMITY_RADIUS) {
                 Log.d("ProximityCheck", "You are within 50 meters of " + hikeSpot.getPlace());
+
+                // Save the proximity alert to the database
+                boolean isSaved = dbHelper.insertTempProximityAlert(chatId, hikeSpot.getPlace());
+                if (isSaved) {
+                    Log.d("ProximityCheck", "Proximity alert for " + hikeSpot.getPlace() + " saved.");
+                    if (listener != null) {
+                        listener.onProximityAlertSaved(hikeSpot.getPlace());
+                    }
+                } else {
+                    Log.d("ProximityCheck", "Failed to save proximity alert for " + hikeSpot.getPlace());
+                    if (listener != null) {
+                        listener.onError("Failed to save proximity alert for " + hikeSpot.getPlace());
+                    }
+                }
             } else {
                 Log.d("ProximityCheck", "You are " + distance + " meters away from " + hikeSpot.getPlace());
             }
         }
+    }
+
+    // Clear all temporary proximity alerts
+    public void clearProximityAlerts() {
+        DatabaseHelper dbHelper = new DatabaseHelper(context);
+        dbHelper.clearTempProximityAlerts();
+        Log.d("ProximityCheck", "All temporary proximity alerts cleared.");
     }
 }

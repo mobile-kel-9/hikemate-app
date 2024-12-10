@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.Manifest;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -49,10 +50,8 @@ public class MainActivity extends AppCompatActivity{
         fetchAndStoreHikeSpots();
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Request permission if not granted
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         } else {
-            // Permission already granted, proceed with fetching location
             fetchLocation();
         }
 
@@ -145,8 +144,19 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onLocationFetched(double latitude, double longitude) {
                 Log.d("CurrentLocation", "Latitude: " + latitude + ", Longitude: " + longitude);
-                LocationUtils locationUtils = new LocationUtils(MainActivity.this);  // MainActivity context
-                locationUtils.checkProximityToHikeSpots(latitude, longitude);  // Call the method
+
+                LocationUtils locationUtils = new LocationUtils(MainActivity.this);
+                locationUtils.checkProximityToHikeSpots(latitude, longitude, "exampleChatId", new LocationUtils.OnProximityAlertListener() {
+                    @Override
+                    public void onProximityAlertSaved(String hikeSpotName) {
+                        Toast.makeText(MainActivity.this, "You are near " + hikeSpotName, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(String errorMessage) {
+                        Toast.makeText(MainActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
@@ -155,6 +165,8 @@ public class MainActivity extends AppCompatActivity{
             }
         });
     }
+
+
 
     @Override
     protected void onResume() {

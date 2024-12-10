@@ -43,9 +43,9 @@ public class FallDetection implements SensorEventListener {
     }
 
     private void showFallAlert() {
-        // Use an Intent to start the alert activity
+
         Intent intent = new Intent(context, SOSAlert.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // Required when starting an activity from a non-activity context
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
