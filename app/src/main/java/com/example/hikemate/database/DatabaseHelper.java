@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.hikemate.model.HikeSpot;
+import com.example.hikemate.model.TemporaryHikeSpot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,6 +117,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         db.close();
         return result != -1; // Return true if insert was successful
+    }
+
+    public List<TemporaryHikeSpot> getTemporaryHikeSpots() {
+        List<TemporaryHikeSpot> temporaryHikeSpots = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_TEMP_ALERTS, null, null, null, null, null, null);
+
+        if (cursor != null) {
+            // Check if the cursor has any data
+            if (cursor.moveToFirst()) {
+                do {
+                    // Get the column indices
+                    int chatIdIndex = cursor.getColumnIndex(COLUMN_ALERT_CHAT_ID);
+                    int hikeSpotNameIndex = cursor.getColumnIndex(COLUMN_ALERT_HIKE_SPOT);
+
+                    // Check if the indices are valid
+                    if (chatIdIndex >= 0 && hikeSpotNameIndex >= 0) {
+                        String chatId = cursor.getString(chatIdIndex);
+                        String hikeSpotName = cursor.getString(hikeSpotNameIndex);
+                        temporaryHikeSpots.add(new TemporaryHikeSpot(chatId, hikeSpotName));
+                    } else {
+                        Log.e("DatabaseHelper", "Column index not found. Chat ID index: " + chatIdIndex + ", Hike Spot Name index: " + hikeSpotNameIndex);
+                    }
+                } while (cursor.moveToNext());
+            } else {
+                Log.d("DatabaseHelper", "Cursor is empty.");
+            }
+            cursor.close();
+        } else {
+            Log.e("DatabaseHelper", "Cursor is null.");
+        }
+        return temporaryHikeSpots;
     }
 
     // Clear all temporary proximity alerts

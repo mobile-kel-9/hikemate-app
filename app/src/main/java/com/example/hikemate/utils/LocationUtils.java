@@ -19,7 +19,7 @@ public class LocationUtils {
 
     // Define the listener interface
     public interface OnProximityAlertListener {
-        void onProximityAlertSaved(String hikeSpotName); // Triggered when a proximity alert is successfully saved
+        void onProximityAlertSaved(String hikeSpotName, String chat_id); // Triggered when a proximity alert is successfully saved
         void onError(String errorMessage);               // Triggered if saving fails
     }
 
@@ -42,7 +42,7 @@ public class LocationUtils {
                 if (isSaved) {
                     Log.d("ProximityCheck", "Proximity alert for " + hikeSpot.getPlace() + " saved.");
                     if (listener != null) {
-                        listener.onProximityAlertSaved(hikeSpot.getPlace());
+                        listener.onProximityAlertSaved(hikeSpot.getPlace(), hikeSpot.getChat_id());
                     }
                 } else {
                     Log.d("ProximityCheck", "Failed to save proximity alert for " + hikeSpot.getPlace());
