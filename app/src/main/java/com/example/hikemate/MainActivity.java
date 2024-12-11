@@ -1,7 +1,5 @@
 package com.example.hikemate;
 
-import static java.lang.String.valueOf;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -24,7 +22,6 @@ import com.example.hikemate.model.HikeSpotProxResponse;
 import com.example.hikemate.model.HikeSpotResponse;
 import com.example.hikemate.model.SOSRequest;
 import com.example.hikemate.model.SOSResponse;
-import com.example.hikemate.network.AuthApi;
 import com.example.hikemate.network.HikeSpotApi;
 import com.example.hikemate.network.RetrofitClient;
 
@@ -42,14 +39,6 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import androidx.appcompat.app.AppCompatActivity;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 public class MainActivity extends AppCompatActivity{
 
     private ActivityMainBinding binding;
@@ -61,13 +50,6 @@ public class MainActivity extends AppCompatActivity{
     private LocationCallback locationCallback;
 
     private static final String TAG = "MainActivity";
-//    private static final double LATITUDE = -7.2898775; // Placeholder latitude
-//    private static final double LONGITUDE = 112.8123612; // Placeholder longitude
-    private static final long INTERVAL = 10000; // Interval in milliseconds (10 seconds)
-
-    private Handler handler = new Handler();
-    private HikeSpotApi hikeSpotApi;
-
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
     private Button logOutButton;
@@ -88,40 +70,6 @@ public class MainActivity extends AppCompatActivity{
 
         barometerUtil = new BarometerUtil(this);
         fallDetection = new FallDetection(this);
-
-
-        // [BEGIN] TESTING PROXIMITY CHECK
-//        double latitude = -7.2898602;
-//        double longitude = 112.8123614;
-//
-//        getHikeSpots(latitude, longitude);
-
-//        HikeSpotApi apiService = RetrofitClient.getHikeSpotApi();
-//        String accessToken = "Bearer " + getAccessTokenFromSharedPreferences();
-//        Call<HikeSpotProxResponse> call = apiService.getHikeSpotsByLocation(latitude, longitude, accessToken);
-//
-//        call.enqueue(new Callback<HikeSpotProxResponse>() {
-//            @Override
-//            public void onResponse(Call<HikeSpotProxResponse> call, Response<HikeSpotProxResponse> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    List<HikeSpotProxResponse.HikeSpot> hikeSpots = response.body().getData();
-//                    // Handle the list of hike spots
-//                    for (HikeSpotProxResponse.HikeSpot spot : hikeSpots) {
-//                        Log.d("ProximityCheck", "Hike Spot: " + spot.getPlace());
-//                    }
-//                } else {
-//                    Log.e(TAG, "Response error: " + response.message());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<HikeSpotProxResponse> call, Throwable t) {
-//                Log.e(TAG, "API call failed: " + t.getMessage());
-//            }
-//        });
-        // [END] TESTING PROXIMITY CHECK
-
-        fetchAndStoreHikeSpots();
 
         // [BEGIN] REALTIME LOCATION
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -147,15 +95,6 @@ public class MainActivity extends AppCompatActivity{
             }
         };
         // [END] REALTIME LOCATION
-
-//        // Initialize Retrofit and HikeSpotApi
-//        hikeSpotApi = RetrofitClient.getInstance().create(HikeSpotApi.class);
-//
-//        // Initialize the Handler
-//        handler = new Handler();
-
-        // Start periodic requests
-//        startPeriodicRequests();
 
 //        binding = ActivityMainBinding.inflate(getLayoutInflater());
 //        setContentView(binding.getRoot());
@@ -183,56 +122,10 @@ public class MainActivity extends AppCompatActivity{
         finish();
     }
 
-    private void fetchAndStoreHikeSpots() {
-        HikeSpotApi hikespotApi = RetrofitClient.getInstance().create(HikeSpotApi.class);
-
-        String accessToken = "Bearer " + getAccessTokenFromSharedPreferences();
-        Call<HikeSpotResponse> call = hikespotApi.getHikeSpots(accessToken);
-
-        call.enqueue(new Callback<HikeSpotResponse>() {
-            @Override
-            public void onResponse(Call<HikeSpotResponse> call, Response<HikeSpotResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<HikeSpot> hikeSpots = response.body().getData();
-
-                    DatabaseHelper dbHelper = new DatabaseHelper(MainActivity.this);
-
-                    for (HikeSpot hikeSpot : hikeSpots) {
-                        dbHelper.insertHikeSpot(hikeSpot);
-                    }
-
-                    Log.d("Database", "Hike spots saved successfully");
-//                    logAllHikeSpots();
-                } else {
-                    Log.e("API Error", "Failed to fetch data: " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<HikeSpotResponse> call, Throwable t) {
-                Log.e("Network Error", "Failed to fetch data: " + t.getMessage());
-            }
-        });
-    }
-
     private String getAccessTokenFromSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         return sharedPreferences.getString("accessToken", "");
     }
-
-//    public void logAllHikeSpots() {
-//        DatabaseHelper dbHelper = new DatabaseHelper(this);
-//        List<HikeSpot> hikeSpots = dbHelper.getAllHikeSpots();
-//
-//        for (HikeSpot hikeSpot : hikeSpots) {
-//            Log.d("HikeSpot", "ID: " + hikeSpot.getId() +
-//                    ", Place: " + hikeSpot.getPlace() +
-//                    ", Latitude: " + hikeSpot.getLat() +
-//                    ", Longitude: " + hikeSpot.getLong() +
-//                    ", Chat ID: " + hikeSpot.getChat_id() +
-//                    ", Phone Number: " + hikeSpot.getPhone_number());
-//        }
-//    }
 
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -259,32 +152,6 @@ public class MainActivity extends AppCompatActivity{
             }
         }
     }
-
-//    private void getHikeSpots(double latitude, double longitude) {
-//        HikeSpotApi apiService = RetrofitClient.getHikeSpotApi();
-//        String accessToken = "Bearer " + getAccessTokenFromSharedPreferences();
-//        Call<HikeSpotProxResponse> call = apiService.getHikeSpotsByLocation(latitude, longitude, accessToken);
-//
-//        call.enqueue(new Callback<HikeSpotProxResponse>() {
-//            @Override
-//            public void onResponse(Call<HikeSpotProxResponse> call, Response<HikeSpotProxResponse> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    List<HikeSpotProxResponse.HikeSpot> hikeSpots = response.body().getData();
-//                    for (HikeSpotProxResponse.HikeSpot spot : hikeSpots) {
-//                        Log.d("ProximityCheck", "Hike Spot: " + spot.getPlace() + "Chat ID: " + spot.getChatId());
-//
-//                    }
-//                } else {
-//                    Log.e(TAG, "Response error: " + response.message());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<HikeSpotProxResponse> call, Throwable t) {
-//                Log.e(TAG, "API call failed: " + t.getMessage());
-//            }
-//        });
-//    }
 
     private void getHikeSpots(double latitude, double longitude) {
         HikeSpotApi apiService = RetrofitClient.getHikeSpotApi();
@@ -343,7 +210,6 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void validateSOSRequest(SOSRequest sosRequest) {
-        // Log the request details for validation
         Log.d("SOSRequestValidation", "Validating SOS Request:");
         Log.d("SOSRequestValidation", "Latitude: " + sosRequest.getLat());
         Log.d("SOSRequestValidation", "Longitude: " + sosRequest.getLong());
@@ -388,7 +254,5 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Remove callbacks to avoid memory leaks
-        handler.removeCallbacksAndMessages(null);
     }
 }
