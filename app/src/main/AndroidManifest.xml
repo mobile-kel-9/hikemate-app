@@ -30,7 +30,7 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".SOSAlert" />
-
+        <activity android:name=".PostCreationActivity" />
         <activity
             android:name=".LoginActivity"
             android:exported="true"

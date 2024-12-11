@@ -37,7 +37,7 @@ public interface PostsApi {
             @Part("title") RequestBody title,
             @Part("content") RequestBody content,
             @Part("place") RequestBody place,
-            @Part("file") MultipartBody.Part file
+            @Part MultipartBody.Part file
     );
 
     @DELETE("posts/{id}")
