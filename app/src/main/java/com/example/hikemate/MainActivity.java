@@ -55,8 +55,7 @@ public class MainActivity extends AppCompatActivity{
 
     private static final String TAG = "HikeSpotCallbackImpl";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
-    private HikeSpotService hikeSpotService;
-
+    private String chatId = null;
     private Button logOutButton;
 
     @Override
@@ -73,14 +72,11 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        fallDetection = new FallDetection(this);
+        Log.d("ChatID", "Chat ID: " + chatId);
+
+//        fallDetection = new FallDetection(this);
 
         HikeSpotApi apiService = RetrofitClient.getHikeSpotApi();
-        SOSService sosService = new SOSService();
-        barometerUtil = new BarometerUtil(this);
-        SharedPreferences sharedPreferences = getSharedPreferences("app_preferences", MODE_PRIVATE);
-
-//        hikeSpotService = new HikeSpotService(apiService, sosService, barometerUtil, sharedPreferences);
 
         // [BEGIN] REALTIME LOCATION
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -97,14 +93,12 @@ public class MainActivity extends AppCompatActivity{
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
-                    // Handle the location update
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
                     Log.d("LocationUpdate", "Lat: " + location.getLatitude() + ", Lon: " + location.getLongitude());
                     String accessToken = getAccessTokenFromSharedPreferences();
                     Log.d("AccessToken", "Access Token: " + accessToken);
                     HikeSpotService hikeSpotService = new HikeSpotService(apiService);
-                    String chatId = null;
                     HikeSpotCallback callback = new HikeSpotCallbackImpl(new ResultHandler() {
                         @Override
                         public void onResult(String chatId) {
