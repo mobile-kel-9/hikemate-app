@@ -2,15 +2,22 @@ package com.example.hikemate;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.example.hikemate.model.PostOriginalResponse;
 import com.example.hikemate.model.PostResponse;
@@ -21,6 +28,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -33,6 +42,10 @@ public class PostCreationActivity extends AppCompatActivity {
     private EditText editTextTitle, editTextContent, editTextPlace;
     private TextView textViewFileName;
     private Uri selectedFileUri;
+    private Uri cameraImageUri;
+    private static final int REQUEST_TAKE_PHOTO = 2;
+    private static final int REQUEST_CHOOSE_FILE = 1;
+    private static final int REQUEST_CAMERA_PERMISSION = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,22 +58,86 @@ public class PostCreationActivity extends AppCompatActivity {
         textViewFileName = findViewById(R.id.textViewFileName);
 
         findViewById(R.id.buttonChooseFile).setOnClickListener(v -> chooseFile());
+        findViewById(R.id.buttonTakePicture).setOnClickListener(v -> takePicture());
         findViewById(R.id.buttonSubmitPost).setOnClickListener(v -> submitPost());
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                takePicture();
+            } else {
+                Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void chooseFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
-        startActivityForResult(Intent.createChooser(intent, "Choose File"), 1);
+        startActivityForResult(Intent.createChooser(intent, "Choose File"), REQUEST_CHOOSE_FILE);
+    }
+
+    private void takePicture() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+        } else {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException ex) {
+                    Log.d("PostCreation", ex.toString());
+                    Toast.makeText(PostCreationActivity.this, "Failed to take a picture", Toast.LENGTH_SHORT).show();
+                }
+                // Continue only if the File was successfully created
+                if (photoFile != null) {
+                    cameraImageUri = FileProvider.getUriForFile(this, "com.example.hikemate.fileprovider", photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraImageUri);
+                    takePictureIntent.setFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                }
+            }
+        }
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        if (storageDir == null) {
+            throw new IOException("External storage is not available");
+        }
+
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        if (image == null) {
+            throw new IOException("Failed to create image file");
+        }
+        return image;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
+        if (requestCode == REQUEST_CHOOSE_FILE && resultCode == RESULT_OK && data != null) {
             selectedFileUri = data.getData();
             String fileName = selectedFileUri.getLastPathSegment();
             textViewFileName.setText(fileName);
+        } else if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
+            String fileName = cameraImageUri.getLastPathSegment();
+            textViewFileName.setText(fileName);
+            selectedFileUri = cameraImageUri;
         }
     }
 
