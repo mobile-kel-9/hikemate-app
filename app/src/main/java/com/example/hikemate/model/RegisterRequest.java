@@ -8,7 +8,6 @@ public class RegisterRequest {
     private String birth_date;
     private String country;
 
-    // Constructor
     public RegisterRequest(String name, String email, String password, String birth_date, String country) {
         this.name = name;
         this.email = email;
@@ -17,7 +16,6 @@ public class RegisterRequest {
         this.country = country;
     }
 
-    // Getters
     public String getName() {
         return name;
     }
@@ -38,7 +36,6 @@ public class RegisterRequest {
         return country;
     }
 
-    // Setters
     public void setName(String name) {
         this.name = name;
     }

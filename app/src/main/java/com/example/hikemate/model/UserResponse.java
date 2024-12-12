@@ -5,14 +5,12 @@ public class UserResponse {
     private String username;
     private String email;
 
-    // Constructor
     public UserResponse(String id, String username, String email) {
         this.id = id;
         this.username = username;
         this.email = email;
     }
 
-    // Getters and Setters
     public String getId() {
         return id;
     }

@@ -89,5 +89,19 @@ public class HikeSpotProxResponse {
         public void setUpdatedAt(String updated_at) {
             this.updated_at = updated_at;
         }
+
+        @Override
+        public String toString() {
+            return "HikeSpot{" +
+                    "id='" + id + '\'' +
+                    ", lat='" + lat + '\'' +
+                    ", lng='" + lng + '\'' +
+                    ", place='" + place + '\'' +
+                    ", chatId='" + chat_id + '\'' +
+                    ", phoneNumber='" + phone_number + '\'' +
+                    ", createdAt='" + created_at + '\'' +
+                    ", updatedAt='" + updated_at + '\'' +
+                    '}';
+        }
     }
 }

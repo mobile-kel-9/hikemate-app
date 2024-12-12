@@ -5,18 +5,17 @@ import com.google.gson.annotations.SerializedName;
 import java.time.ZonedDateTime;
 
 public class SOSResponse {
-    private String id;            // Unique identifier for the SOS request
-    private String lat;           // Latitude as a String
+    private String id;
+    private String lat;
     @SerializedName("long")
-    private String lng;          // Longitude as a String
-    private String place;         // Place name
-    private String message;       // SOS message
-    private String chatId;        // Chat ID
-    private String userId;        // User ID
-    private ZonedDateTime createdAt; // Timestamp for when the SOS was created
-    private ZonedDateTime updatedAt; // Timestamp for when the SOS was last updated
+    private String lng;
+    private String place;
+    private String message;
+    private String chatId;
+    private String userId;
+    private ZonedDateTime createdAt;
+    private ZonedDateTime updatedAt;
 
-    // Constructor
     public SOSResponse(String id, String lat, String lng, String place, String message,
                        String chatId, String userId, ZonedDateTime createdAt, ZonedDateTime updatedAt) {
         this.id = id;
@@ -30,7 +29,6 @@ public class SOSResponse {
         this.updatedAt = updatedAt;
     }
 
-    // Getters and Setters
     public String getId() {
         return id;
     }

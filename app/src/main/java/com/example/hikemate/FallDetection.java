@@ -1,21 +1,40 @@
 package com.example.hikemate;
 
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
+
+import com.example.hikemate.model.SOSRequest;
+import com.example.hikemate.model.SOSResponse;
+import com.example.hikemate.services.SOSService;
 
 public class FallDetection implements SensorEventListener {
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private Context context;
+    private double latitude;
+    private double longitude;
+    private double height;
+    private String chatId;
+    private String authToken;
+    private String message;
+    private SOSService sosService;
 
-    public FallDetection(Context context) {
+    public FallDetection(Context context, double latitude, double longitude, double height, String chatId, String authToken) {
         this.context = context;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.height = height;
+        this.chatId = chatId;
+        this.authToken = authToken;
+        this.message = "Tolong Kami!";
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sosService = new SOSService();
+
     }
 
     public void start() {
@@ -36,21 +55,29 @@ public class FallDetection implements SensorEventListener {
             float z = event.values[2];
 
             double SMV = Math.sqrt(x * x + y * y + z * z);
-            if (SMV > 20) {
-                showFallAlert();
+            if (SMV > 15) {
+                sendSOS();
             }
         }
     }
 
-    private void showFallAlert() {
+    private void sendSOS() {
+        Log.d("AccessToken", "Access Token to sendSOS: "+ authToken);
+        SOSRequest sosRequest = new SOSRequest(String.valueOf(latitude), String.valueOf(longitude), String.valueOf(height), message); // Create a new SOS request
+        sosService.sendSOS(chatId, "Bearer " + authToken, sosRequest, new SOSService.SOSCallback() {
+            @Override
+            public void onSuccess(SOSResponse sosResponse) {
+                Log.d("FallDetection", "SOS sent successfully");
+            }
 
-        Intent intent = new Intent(context, SOSAlert.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+            @Override
+            public void onFailure(Throwable throwable) {
+                Log.e("FallDetection", "Failed to send SOS", throwable);
+            }
+        });
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Not used
     }
 }
