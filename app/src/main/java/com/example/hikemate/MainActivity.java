@@ -15,10 +15,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
+import com.example.hikemate.database.DatabaseHelper;
 import com.example.hikemate.databinding.ActivityMainBinding;
-import com.example.hikemate.network.HikeSpotApi;
+import com.example.hikemate.model.HikeSpot;
+import com.example.hikemate.model.HikeSpotResponse;
+import com.example.hikemate.network.AuthApi;
 import com.example.hikemate.network.RetrofitClient;
+import com.example.hikemate.services.LocationService;
+import com.example.hikemate.utils.LocationUtils;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.example.hikemate.services.HikeSpotService;
 import com.example.hikemate.utils.BarometerUtil;
@@ -30,6 +40,13 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -52,7 +69,9 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         logOutButton = findViewById(R.id.logout_button);
 
@@ -117,18 +136,25 @@ public class MainActivity extends AppCompatActivity{
         };
         // [END] REALTIME LOCATION
 
-//        binding = ActivityMainBinding.inflate(getLayoutInflater());
-//        setContentView(binding.getRoot());
-//
-//        BottomNavigationView navView = findViewById(R.id.nav_view);
-//        // Passing each menu ID as a set of Ids because each
-//        // menu should be considered as top level destinations.
-//        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-//                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
-//                .build();
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-//        NavigationUI.setupWithNavController(binding.navView, navController);
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        NavigationUI.setupWithNavController(binding.navView, navController);
+        navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
+            if (destination.getId() == R.id.navigation_home) {
+                setTitle("Home");
+            } else if (destination.getId() == R.id.navigation_dashboard) {
+                setTitle("Dashboard");
+            } else if (destination.getId() == R.id.navigation_feed) {
+                setTitle("Feed");
+            } else if (destination.getId() == R.id.navigation_notifications) {
+                setTitle("Notifications");
+            }
+        });
+
+        fallDetection = new FallDetection(this);
     }
 
     private void handleLogout() {

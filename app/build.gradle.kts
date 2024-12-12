@@ -3,6 +3,9 @@ plugins {
 }
 
 android {
+    viewBinding {
+        enable = true
+    }
     namespace = "com.example.hikemate"
     compileSdk = 34
 
@@ -31,6 +34,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        dataBinding = true
     }
 }
 
@@ -46,7 +50,11 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.play.services.location)
+    implementation(libs.glide)
+    implementation(libs.swiperefreshlayout)
+    annotationProcessor(libs.glide.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
 }
