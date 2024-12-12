@@ -23,7 +23,6 @@ public class SOSService {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
-                    // Log the full response body for debugging
                     Log.e("SOSService", "Response error: " + response.message() + " - " + response.errorBody());
                     callback.onFailure(new Exception("Failed to send SOS: " + response.message()));
                 }

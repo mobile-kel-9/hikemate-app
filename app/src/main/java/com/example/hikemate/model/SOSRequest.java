@@ -7,15 +7,13 @@ public class SOSRequest {
     @SerializedName("long")
     private String lng;     // Longitude as a String
     private String height;   // Height as a String
-    private String place;    // Place name
     private String message;  // SOS message
 
     // Constructor
-    public SOSRequest(String lat, String lng, String height, String place, String message) {
+    public SOSRequest(String lat, String lng, String height, String message) {
         this.lat = lat;
         this.lng = lng;
         this.height = height;
-        this.place = place;
         this.message = message;
     }
 
@@ -44,14 +42,6 @@ public class SOSRequest {
         this.height = height;
     }
 
-    public String getPlace() {
-        return place;
-    }
-
-    public void setPlace(String place) {
-        this.place = place;
-    }
-
     public String getMessage() {
         return message;
     }
@@ -66,7 +56,6 @@ public class SOSRequest {
                 "lat=" + lat +
                 ", lng=" + lng +
                 ", height='" + height + '\'' +
-                ", place='" + place + '\'' +
                 ", message='" + message + '\'' +
                 '}';
     }

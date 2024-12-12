@@ -1,5 +1,6 @@
 package com.example.hikemate;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -15,24 +16,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.example.hikemate.database.DatabaseHelper;
 import com.example.hikemate.databinding.ActivityMainBinding;
-import com.example.hikemate.model.HikeSpot;
-import com.example.hikemate.model.HikeSpotProxResponse;
-import com.example.hikemate.model.HikeSpotResponse;
-import com.example.hikemate.model.SOSRequest;
-import com.example.hikemate.model.SOSResponse;
 import com.example.hikemate.network.HikeSpotApi;
 import com.example.hikemate.network.RetrofitClient;
 
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
 import com.example.hikemate.services.HikeSpotService;
-import com.example.hikemate.services.SOSService;
 import com.example.hikemate.utils.BarometerUtil;
 import com.example.hikemate.utils.HikeSpotCallback;
 import com.example.hikemate.utils.HikeSpotCallbackImpl;
@@ -53,7 +41,10 @@ public class MainActivity extends AppCompatActivity{
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
 
-    private static final String TAG = "HikeSpotCallbackImpl";
+    private double latitude;
+    private double longitude;
+    private float height;
+    private String accessToken = null;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private String chatId = null;
     private Button logOutButton;
@@ -74,9 +65,17 @@ public class MainActivity extends AppCompatActivity{
 
         Log.d("ChatID", "Chat ID: " + chatId);
 
-//        fallDetection = new FallDetection(this);
-
         HikeSpotApi apiService = RetrofitClient.getHikeSpotApi();
+
+        barometerUtil = new BarometerUtil(this, new BarometerUtil.AltitudeCallback() {
+            @Override
+            public void onAltitudeChanged(float newAltitude) {
+                height = newAltitude;
+                Log.d("Barometer", "Alt: " + height);
+            }
+        });
+        barometerUtil.start();
+
 
         // [BEGIN] REALTIME LOCATION
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -93,10 +92,10 @@ public class MainActivity extends AppCompatActivity{
                     return;
                 }
                 for (Location location : locationResult.getLocations()) {
-                    double latitude = location.getLatitude();
-                    double longitude = location.getLongitude();
+                    latitude = location.getLatitude();
+                    longitude = location.getLongitude();
                     Log.d("LocationUpdate", "Lat: " + location.getLatitude() + ", Lon: " + location.getLongitude());
-                    String accessToken = getAccessTokenFromSharedPreferences();
+                    accessToken = getAccessTokenFromSharedPreferences();
                     Log.d("AccessToken", "Access Token: " + accessToken);
                     HikeSpotService hikeSpotService = new HikeSpotService(apiService);
                     HikeSpotCallback callback = new HikeSpotCallbackImpl(new ResultHandler() {
@@ -104,6 +103,8 @@ public class MainActivity extends AppCompatActivity{
                         public void onResult(String chatId) {
                             chatId = chatId;
                             Log.d("ChatID", "Chat ID: " + chatId);
+                            FallDetection fallDetection = new FallDetection(MainActivity.this, latitude, longitude, height, chatId, accessToken);
+                            fallDetection.start();
                         }
 
                         @Override
@@ -128,7 +129,6 @@ public class MainActivity extends AppCompatActivity{
 //        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 //        NavigationUI.setupWithNavController(binding.navView, navController);
-        fallDetection = new FallDetection(this);
     }
 
     private void handleLogout() {
@@ -175,81 +175,23 @@ public class MainActivity extends AppCompatActivity{
     }
     // [END] REALTIME LOCATION
 
-//    private void getHikeSpots(double latitude, double longitude) {
-//        HikeSpotApi apiService = RetrofitClient.getHikeSpotApi();
-//        String accessToken = "Bearer " + getAccessTokenFromSharedPreferences();
-//        Call<HikeSpotProxResponse> call = apiService.getHikeSpotsByLocation(latitude, longitude, accessToken);
-//
-//        call.enqueue(new Callback<HikeSpotProxResponse>() {
-//            @Override
-//            public void onResponse(Call<HikeSpotProxResponse> call, Response<HikeSpotProxResponse> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-//                    List<HikeSpotProxResponse.HikeSpot> hikeSpots = response.body().getData();
-//                    for (HikeSpotProxResponse.HikeSpot spot : hikeSpots) {
-//                        Log.d("ProximityCheck", "Hike Spot: " + spot.getPlace() + " Chat ID: " + spot.getChatId());
-//                        float altitude = barometerUtil.getAltitude();
-//                        // Create an SOSRequest for each hike spot
-//                        SOSRequest sosRequest = new SOSRequest(
-//                                String.valueOf(latitude), // Latitude
-//                                String.valueOf(longitude), // Longitude
-//                                String.valueOf(altitude), // Example height, modify as needed
-//                                spot.getPlace(), // Place from the hike spot
-//                                "Tolong Kami!" // Example message, modify as needed
-//                        );
-//
-//                        // Validate the SOSRequest before sending
-//                        validateSOSRequest(sosRequest);
-//
-//                        // Call the SOSService to send the SOS
-//                        SOSService sosService = new SOSService();
-//                        String chatId = spot.getChatId(); // Get the chat ID from the hike spot
-//                        String authToken = "Bearer " + getAccessTokenFromSharedPreferences(); // Get the auth token
-//
-//                        sosService.sendSOS(chatId, authToken, sosRequest, new SOSService.SOSCallback() {
-//                            @Override
-//                            public void onSuccess(SOSResponse sosResponse) {
-//                                // Handle the successful SOS response
-//                                Log.d("SOSService", "SOS sent successfully for chat ID: " + chatId);
-//                            }
-//
-//                            @Override
-//                            public void onFailure(Throwable throwable) {
-//                                // Handle the error
-//                                Log.e("SOSService", "Error sending SOS for chat ID: " + chatId + " - " + throwable.getMessage());
-//                            }
-//                        });
-//                    }
-//                } else {
-//                    Log.e(TAG, "Response error: " + response.message());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<HikeSpotProxResponse> call, Throwable t) {
-//                Log.e(TAG, "API call failed: " + t.getMessage());
-//            }
-//        });
-//    }
-
     @Override
     protected void onResume() {
         super.onResume();
         startLocationUpdates();
-        fallDetection.start();
-        // Start the BarometerUtil
-        if (barometerUtil != null) {
-            barometerUtil.start();
-        } else {
-            Log.e("MainActivity", "BarometerUtil is null");
-        }
+        barometerUtil.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         stopLocationUpdates();
-        fallDetection.stop();
-        barometerUtil.stop();
+        if (fallDetection != null) {
+            fallDetection.stop();
+        }
+        if (barometerUtil != null) {
+            barometerUtil.stop();
+        }
     }
 
     @Override
