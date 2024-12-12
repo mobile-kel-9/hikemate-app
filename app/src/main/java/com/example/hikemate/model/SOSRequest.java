@@ -3,13 +3,12 @@ package com.example.hikemate.model;
 import com.google.gson.annotations.SerializedName;
 
 public class SOSRequest {
-    private String lat;      // Latitude as a String
+    private String lat;
     @SerializedName("long")
-    private String lng;     // Longitude as a String
-    private String height;   // Height as a String
-    private String message;  // SOS message
+    private String lng;
+    private String height;
+    private String message;
 
-    // Constructor
     public SOSRequest(String lat, String lng, String height, String message) {
         this.lat = lat;
         this.lng = lng;
@@ -17,7 +16,6 @@ public class SOSRequest {
         this.message = message;
     }
 
-    // Getters and Setters
     public String getLat() {
         return lat;
     }

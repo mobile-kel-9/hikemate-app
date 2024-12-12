@@ -8,7 +8,6 @@ import java.util.TimeZone;
 
 public class DateUtils {
 
-    // Method to format date to ISO 8601
     public static String formatToIso8601(String date) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");

@@ -44,7 +44,6 @@ public class BarometerUtil implements SensorEventListener {
         if (event.sensor.getType() == Sensor.TYPE_PRESSURE) {
             Log.d("Barometer", "Sensor data received");
             pressure = event.values[0];
-            // Calculate altitude using the pressure value
             altitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressure);
             if (callback != null) {
                 callback.onAltitudeChanged(altitude);
@@ -54,6 +53,5 @@ public class BarometerUtil implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // You can handle accuracy changes if needed
     }
 }

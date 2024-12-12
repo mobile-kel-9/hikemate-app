@@ -85,11 +85,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void handleRegister() {
-//        String name = "Duljekkk";
-//        String email = "duljek29@gmail.com";
-//        String password = "lorem";
-//        String birth_date = "2024-12-10";
-//        String country = "Indonesia";
         String name = nameInput.getText().toString().trim();
         String email = emailInput.getText().toString().trim();
         String password = passwordInput.getText().toString();
@@ -100,14 +95,6 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(this, "Please fill out all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-
-//        Log.d("RegisterActivity", "Date: " + _birth_date);
-
-//        String birth_date = formatToIso8601(_birth_date);
-//        if (birth_date == null) {
-//            Toast.makeText(this, "Invalid date format", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
 
         Log.d("RegisterActivity", "Name: " + name);
         Log.d("RegisterActivity", "Email: " + email);

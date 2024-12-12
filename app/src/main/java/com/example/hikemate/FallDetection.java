@@ -79,6 +79,5 @@ public class FallDetection implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Not used
     }
 }
