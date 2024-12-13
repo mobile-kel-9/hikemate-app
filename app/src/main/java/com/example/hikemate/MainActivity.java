@@ -3,6 +3,7 @@ package com.example.hikemate;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.Manifest;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -20,7 +22,6 @@ import com.example.hikemate.model.HikeSpot;
 import com.example.hikemate.model.HikeSpotResponse;
 import com.example.hikemate.network.AuthApi;
 import com.example.hikemate.network.RetrofitClient;
-import com.example.hikemate.services.LocationService;
 import com.example.hikemate.utils.LocationUtils;
 
 import java.util.List;
@@ -31,10 +32,21 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 public class MainActivity extends AppCompatActivity{
 
     private ActivityMainBinding binding;
     private FallDetection fallDetection;
+
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
@@ -49,18 +61,36 @@ public class MainActivity extends AppCompatActivity{
 
         fetchAndStoreHikeSpots();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        } else {
-            fetchLocation();
-        }
-
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 handleLogout();
             }
         });
+
+        // Initialize FusedLocationProviderClient
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Create location request
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(60000);
+        locationRequest.setFastestInterval(30000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        // Define location callback
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    // Handle the location update
+                    Log.d("Location Update", "Lat: " + location.getLatitude() + ", Lon: " + location.getLongitude());
+                }
+            }
+        };
+
 //        binding = ActivityMainBinding.inflate(getLayoutInflater());
 //        setContentView(binding.getRoot());
 //
@@ -138,45 +168,44 @@ public class MainActivity extends AppCompatActivity{
 //        }
 //    }
 
-    private void fetchLocation() {
-        LocationService locationService = new LocationService(this);
-        locationService.getCurrentLocation(new LocationService.OnLocationFetchedListener() {
-            @Override
-            public void onLocationFetched(double latitude, double longitude) {
-                Log.d("CurrentLocation", "Latitude: " + latitude + ", Longitude: " + longitude);
-
-                LocationUtils locationUtils = new LocationUtils(MainActivity.this);
-//                locationUtils.checkProximityToHikeSpots(latitude, longitude, "exampleChatId", new LocationUtils.OnProximityAlertListener() {
-//                    @Override
-//                    public void onProximityAlertSaved(String hikeSpotName) {
-//                        Toast.makeText(MainActivity.this, "You are near " + hikeSpotName, Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                    @Override
-//                    public void onError(String errorMessage) {
-//                        Toast.makeText(MainActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-                Log.e("LocationError", errorMessage);
-            }
-        });
+    private void startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Request permissions if not granted
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+            return;
+        }
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
+    private void stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback);
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startLocationUpdates();
+            } else {
+                // Permission denied, show a message to the user
+                Toast.makeText(this, "Location permission is required to get location updates", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
+        startLocationUpdates();
         fallDetection.start();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        stopLocationUpdates();
         fallDetection.stop();
     }
 }

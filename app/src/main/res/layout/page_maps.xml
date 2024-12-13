@@ -7,82 +7,39 @@
     android:background="@color/green_primary"
     tools:context=".ui.dashboard.DashboardFragment">
 
-    <!-- Kolom Lokasi Tujuan -->
-    <!--
-    <EditText
-        android:id="@+id/destination_input"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/sora_regular"
-        android:hint="Masukkan Tujuan"
-        android:textColor="#FFFFFF"
-        android:textColorHint="@color/green_primary"
-        android:textColorHighlight="#0A9273"
-        android:textCursorDrawable="@drawable/cursor"
-        android:padding="10dp"
-        android:background="@drawable/edittext_background"
-        android:layout_margin="10dp"
+    <Button
+        android:id="@+id/btnFindMountain"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-        -->
-
-    <!-- Tombol Cari -->
-    <!--
-    <Button
-        android:id="@+id/search_button"
-        android:layout_width="111dp"
-        android:layout_height="57dp"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/sora_semibold"
-        android:backgroundTint="#FF7648"
-        android:text="Cari"
-        android:textColor="#FFFFFF"
-        android:textSize="11sp"
-        app:cornerRadius="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/destination_input" />
-        -->
-
-    <!-- TextView untuk Jarak -->
-    <!--
-    <TextView
-        android:id="@+id/distance_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
-        android:text="Jarak Lokasi"
-        android:padding="10dp"
-        android:paddingBottom="30dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/edittext_background"
-        app:layout_constraintTop_toBottomOf="@id/search_button"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/mapFragment"/>
-        -->
+        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/sora_semibold"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:background="@drawable/himate_background"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:text="Cari Gunung Terdekat"/>
 
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="120dp"
+        android:layout_marginBottom="16dp"
         android:background="@drawable/spinner_background"
         android:popupBackground="#1E3E62"
         android:textColor="#FFFFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/bottom_card"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintBottom_toTopOf="@id/bottom_card"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="412dp"
-        android:layout_height="729dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -116,14 +73,19 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Destination -->
-        <TextView
+        <!-- Destination Input -->
+        <EditText
             android:id="@+id/destination"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:layout_marginHorizontal="16dp"
             android:fontFamily="@font/sora_regular"
-            android:text="Puncak Gunung Lawu"
+            android:hint="Masukkan lokasi tujuan"
+            android:inputType="text"
             android:textSize="16sp"
+            android:background="@null"
+            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/time_remaining" />

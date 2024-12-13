@@ -4,12 +4,17 @@ import android.util.Log;
 
 import com.example.hikemate.model.LoginRequest;
 import com.example.hikemate.model.LoginResponse;
+import com.example.hikemate.model.Mountain;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
+import retrofit2.http.Header;
 
 public class RetrofitClient {
     private static Retrofit retrofit;
@@ -50,6 +55,11 @@ public class RetrofitClient {
                 Log.e("RetrofitClient", "Login request failed. Error: " + t.getMessage());
             }
         });
+    }
+
+    public interface MountainService {
+        @GET("api/Hikespots/HikespotsController_getDestinations")
+        Call<List<Mountain>> getDestinations(@Header("Authorization") String token);
     }
 
 }

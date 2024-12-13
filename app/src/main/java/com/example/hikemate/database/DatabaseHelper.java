@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.hikemate.model.HikeSpot;
+import com.example.hikemate.model.TemporaryHikeSpot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "hikespots.db";
     private static final int DATABASE_VERSION = 1;
 
-    private static final String TABLE_NAME = "hikespots";
+    // Hike spots table
+    private static final String TABLE_HIKESPOTS = "hikespots";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_PLACE = "place";
     private static final String COLUMN_LAT = "lat";
@@ -25,28 +27,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COLUMN_CHAT_ID = "chat_id";
     private static final String COLUMN_PHONE_NUMBER = "phone_number";
 
+    // Temporary proximity alerts table
+    private static final String TABLE_TEMP_ALERTS = "temp_proximity_alerts";
+    private static final String COLUMN_ALERT_CHAT_ID = "chat_id";
+    private static final String COLUMN_ALERT_HIKE_SPOT = "hike_spot_name";
+    private static final String COLUMN_TIMESTAMP = "timestamp";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String createTable = "CREATE TABLE " + TABLE_NAME + " (" +
+        // Create hike spots table
+        String createHikeSpotsTable = "CREATE TABLE " + TABLE_HIKESPOTS + " (" +
                 COLUMN_ID + " TEXT PRIMARY KEY, " +
                 COLUMN_PLACE + " TEXT, " +
                 COLUMN_LAT + " TEXT, " +
                 COLUMN_LNG + " TEXT, " +
                 COLUMN_CHAT_ID + " TEXT, " +
                 COLUMN_PHONE_NUMBER + " TEXT)";
-        db.execSQL(createTable);
+        db.execSQL(createHikeSpotsTable);
+
+        // Create temporary proximity alerts table
+        String createTempAlertsTable = "CREATE TABLE " + TABLE_TEMP_ALERTS + " (" +
+                COLUMN_ALERT_CHAT_ID + " TEXT NOT NULL, " +
+                COLUMN_ALERT_HIKE_SPOT + " TEXT NOT NULL, " +
+                COLUMN_TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP)";
+        db.execSQL(createTempAlertsTable);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_HIKESPOTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEMP_ALERTS);
         onCreate(db);
     }
 
+    // Insert hike spot
     public void insertHikeSpot(HikeSpot hikeSpot) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -60,15 +78,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_CHAT_ID, hikeSpot.getChat_id());
         values.put(COLUMN_PHONE_NUMBER, hikeSpot.getPhone_number());
 
-        db.insertWithOnConflict(TABLE_NAME, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-
+        db.insertWithOnConflict(TABLE_HIKESPOTS, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
+    // Get all hike spots
     public List<HikeSpot> getAllHikeSpots() {
         List<HikeSpot> hikeSpots = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null);
+        Cursor cursor = db.query(TABLE_HIKESPOTS, null, null, null, null, null, null);
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
@@ -88,5 +106,56 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return hikeSpots;
     }
 
-}
+    // Insert temporary proximity alert
+    public boolean insertTempProximityAlert(String chatId, String hikeSpotName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_ALERT_CHAT_ID, chatId);
+        values.put(COLUMN_ALERT_HIKE_SPOT, hikeSpotName);
 
+        long result = db.insert(TABLE_TEMP_ALERTS, null, values);
+
+        db.close();
+        return result != -1; // Return true if insert was successful
+    }
+
+    public List<TemporaryHikeSpot> getTemporaryHikeSpots() {
+        List<TemporaryHikeSpot> temporaryHikeSpots = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_TEMP_ALERTS, null, null, null, null, null, null);
+
+        if (cursor != null) {
+            // Check if the cursor has any data
+            if (cursor.moveToFirst()) {
+                do {
+                    // Get the column indices
+                    int chatIdIndex = cursor.getColumnIndex(COLUMN_ALERT_CHAT_ID);
+                    int hikeSpotNameIndex = cursor.getColumnIndex(COLUMN_ALERT_HIKE_SPOT);
+
+                    // Check if the indices are valid
+                    if (chatIdIndex >= 0 && hikeSpotNameIndex >= 0) {
+                        String chatId = cursor.getString(chatIdIndex);
+                        String hikeSpotName = cursor.getString(hikeSpotNameIndex);
+                        temporaryHikeSpots.add(new TemporaryHikeSpot(chatId, hikeSpotName));
+                    } else {
+                        Log.e("DatabaseHelper", "Column index not found. Chat ID index: " + chatIdIndex + ", Hike Spot Name index: " + hikeSpotNameIndex);
+                    }
+                } while (cursor.moveToNext());
+            } else {
+                Log.d("DatabaseHelper", "Cursor is empty.");
+            }
+            cursor.close();
+        } else {
+            Log.e("DatabaseHelper", "Cursor is null.");
+        }
+        return temporaryHikeSpots;
+    }
+
+    // Clear all temporary proximity alerts
+    public void clearTempProximityAlerts() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_TEMP_ALERTS);
+        Log.d("ProximityAlert", "All temporary proximity alerts cleared.");
+        db.close();
+    }
+}

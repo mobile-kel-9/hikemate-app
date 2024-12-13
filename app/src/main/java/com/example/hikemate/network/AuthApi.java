@@ -5,6 +5,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 import com.example.hikemate.model.HikeSpot;
 import com.example.hikemate.model.HikeSpotResponse;
@@ -12,6 +13,7 @@ import com.example.hikemate.model.LoginRequest;
 import com.example.hikemate.model.RegisterRequest;
 import com.example.hikemate.model.LoginResponse;
 import com.example.hikemate.model.RegisterResponse;
+//import com.example.hikemate.model.SOSRequest;
 import com.example.hikemate.model.UserResponse;
 
 import java.util.List;
@@ -28,4 +30,7 @@ public interface AuthApi {
 
     @GET("hikespots")
     Call<HikeSpotResponse> getHikeSpots(@Header("Authorization") String token);
+
+//    @POST("sos/{chat_id}")
+//    Call<Void> sendSOS(@Path("chat_id") String chatId, @Body SOSRequest sosRequest);
 }
