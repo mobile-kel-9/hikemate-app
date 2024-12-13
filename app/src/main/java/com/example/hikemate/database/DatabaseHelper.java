@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.example.hikemate.model.HikeSpot;
-import com.example.hikemate.model.TemporaryHikeSpot;
 
 import java.util.ArrayList;
 import java.util.List;
