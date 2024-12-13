@@ -20,14 +20,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.example.hikemate.database.DatabaseHelper;
 import com.example.hikemate.databinding.ActivityMainBinding;
 import com.example.hikemate.model.HikeSpot;
 import com.example.hikemate.model.HikeSpotResponse;
 import com.example.hikemate.network.AuthApi;
+import com.example.hikemate.network.HikeSpotApi;
 import com.example.hikemate.network.RetrofitClient;
-import com.example.hikemate.services.LocationService;
-import com.example.hikemate.utils.LocationUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.example.hikemate.services.HikeSpotService;
@@ -52,7 +50,7 @@ public class MainActivity extends AppCompatActivity{
 
     private ActivityMainBinding binding;
     private FallDetection fallDetection;
-    private BarometerUtil barometerUtil;
+//    private BarometerUtil barometerUtil;
 
     private FusedLocationProviderClient fusedLocationClient;
     private LocationRequest locationRequest;
@@ -60,7 +58,7 @@ public class MainActivity extends AppCompatActivity{
 
     private double latitude;
     private double longitude;
-    private float height;
+    private float height = 50;
     private String accessToken = null;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private String chatId = null;
@@ -86,14 +84,14 @@ public class MainActivity extends AppCompatActivity{
 
         HikeSpotApi apiService = RetrofitClient.getHikeSpotApi();
 
-        barometerUtil = new BarometerUtil(this, new BarometerUtil.AltitudeCallback() {
-            @Override
-            public void onAltitudeChanged(float newAltitude) {
-                height = newAltitude;
-                Log.d("Barometer", "Alt: " + height);
-            }
-        });
-        barometerUtil.start();
+//        barometerUtil = new BarometerUtil(this, new BarometerUtil.AltitudeCallback() {
+//            @Override
+//            public void onAltitudeChanged(float newAltitude) {
+//                height = newAltitude;
+//                Log.d("Barometer", "Alt: " + height);
+//            }
+//        });
+//        barometerUtil.start();
 
 
         // [BEGIN] REALTIME LOCATION
@@ -154,7 +152,6 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        fallDetection = new FallDetection(this);
     }
 
     private void handleLogout() {
@@ -205,7 +202,7 @@ public class MainActivity extends AppCompatActivity{
     protected void onResume() {
         super.onResume();
         startLocationUpdates();
-        barometerUtil.start();
+//        barometerUtil.start();
     }
 
     @Override
@@ -215,9 +212,9 @@ public class MainActivity extends AppCompatActivity{
         if (fallDetection != null) {
             fallDetection.stop();
         }
-        if (barometerUtil != null) {
-            barometerUtil.stop();
-        }
+//        if (barometerUtil != null) {
+//            barometerUtil.stop();
+//        }
     }
 
     @Override
