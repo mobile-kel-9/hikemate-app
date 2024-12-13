@@ -23,6 +23,10 @@ public class FallDetection implements SensorEventListener {
     private String message;
     private SOSService sosService;
 
+    // Cooldown variables
+    private long lastSOSTime = 0;
+    private static final long COOLDOWN_PERIOD = 5 * 60 * 1000; // 5 minutes in milliseconds
+
     public FallDetection(Context context, double latitude, double longitude, double height, String chatId, String authToken) {
         this.context = context;
         this.latitude = latitude;
@@ -34,7 +38,6 @@ public class FallDetection implements SensorEventListener {
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sosService = new SOSService();
-
     }
 
     public void start() {
@@ -56,13 +59,19 @@ public class FallDetection implements SensorEventListener {
 
             double SMV = Math.sqrt(x * x + y * y + z * z);
             if (SMV > 15) {
-                sendSOS();
+                long currentTime = System.currentTimeMillis();
+                if (currentTime - lastSOSTime > COOLDOWN_PERIOD) {
+                    sendSOS();
+                    lastSOSTime = currentTime; // Update the last SOS time
+                }
+                else {
+                    Log.d("FallDetection", "Cooldown Time: " + (currentTime-lastSOSTime));
+                }
             }
         }
     }
 
     private void sendSOS() {
-        Log.d("AccessToken", "Access Token to sendSOS: "+ authToken);
         SOSRequest sosRequest = new SOSRequest(String.valueOf(latitude), String.valueOf(longitude), String.valueOf(height), message); // Create a new SOS request
         sosService.sendSOS(chatId, "Bearer " + authToken, sosRequest, new SOSService.SOSCallback() {
             @Override
