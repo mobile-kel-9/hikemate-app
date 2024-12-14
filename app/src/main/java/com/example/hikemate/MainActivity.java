@@ -194,12 +194,12 @@ public class MainActivity extends AppCompatActivity{
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             if (destination.getId() == R.id.navigation_home) {
                 setTitle("Home");
-            } else if (destination.getId() == R.id.navigation_dashboard) {
-                setTitle("Dashboard");
+            } else if (destination.getId() == R.id.navigation_maps) {
+                setTitle("Maps");
             } else if (destination.getId() == R.id.navigation_feed) {
                 setTitle("Feed");
-            } else if (destination.getId() == R.id.navigation_notifications) {
-                setTitle("Notifications");
+            } else if (destination.getId() == R.id.navigation_profile) {
+                setTitle("Profile");
             }
         });
 

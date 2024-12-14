@@ -37,7 +37,7 @@
                 android:resource="@xml/file_paths" />
         </provider>
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity" android:launchMode="singleTop" />
         <activity android:name=".SOSAlert" />
         <activity android:name=".PostCreationActivity" />
         <activity
