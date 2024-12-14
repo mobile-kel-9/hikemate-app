@@ -7,6 +7,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 import com.example.hikemate.model.LoginRequest;
+import com.example.hikemate.model.MeResponse;
 import com.example.hikemate.model.RegisterRequest;
 import com.example.hikemate.model.LoginResponse;
 import com.example.hikemate.model.RegisterResponse;
@@ -19,6 +20,6 @@ public interface AuthApi {
     @POST("auth/register")
     Call<RegisterResponse> register(@Body RegisterRequest registerRequest);
 
-    @GET("me")
-    Call<UserResponse> validateToken(@Header("Authorization") String token);
+    @GET("auth/me")
+    Call<MeResponse> validateToken(@Header("Authorization") String token);
 }

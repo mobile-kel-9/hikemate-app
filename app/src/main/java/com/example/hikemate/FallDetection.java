@@ -1,11 +1,17 @@
 package com.example.hikemate;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.hikemate.model.SOSRequest;
 import com.example.hikemate.model.SOSResponse;
@@ -77,13 +83,42 @@ public class FallDetection implements SensorEventListener {
             @Override
             public void onSuccess(SOSResponse sosResponse) {
                 Log.d("FallDetection", "SOS sent successfully");
+                showSosPopup(true);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 Log.e("FallDetection", "Failed to send SOS", throwable);
+                showSosPopup(false);
             }
         });
+    }
+
+    private void showSosPopup(boolean isSuccess) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View popupView = inflater.inflate(R.layout.popup_sos, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(popupView);
+
+        TextView messageTextView = popupView.findViewById(R.id.messageTextSOSView);
+        if (isSuccess) {
+            messageTextView.setText("Sensor aplikasi mendeteksi gerakan yang tidak wajar di HP-mu, sinyal SOS sudah dikirim ke pihak berwenang terdekat!");
+        } else {
+            messageTextView.setText("");
+        }
+
+        AlertDialog dialog = builder.create();
+
+        Button okButton = popupView.findViewById(R.id.back_btn);
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     @Override

@@ -18,7 +18,8 @@ public class HikeSpotCallbackImpl implements HikeSpotCallback {
     @Override
     public void onHikeSpotReceived(List<HikeSpotProxResponse.HikeSpot> hikeSpots) {
         String chatId = hikeSpots.get(0).getChatId();
-        resultHandler.onResult(chatId);
+        String place = hikeSpots.get(0).getPlace();
+        resultHandler.onResult(chatId, place);
     }
 
     public String getChatId() {

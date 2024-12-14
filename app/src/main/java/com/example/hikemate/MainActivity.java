@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -23,9 +24,13 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.hikemate.databinding.ActivityMainBinding;
 import com.example.hikemate.model.HikeSpot;
 import com.example.hikemate.model.HikeSpotResponse;
+import com.example.hikemate.model.MeResponse;
+import com.example.hikemate.model.UserProfile;
 import com.example.hikemate.network.AuthApi;
 import com.example.hikemate.network.HikeSpotApi;
 import com.example.hikemate.network.RetrofitClient;
+import com.example.hikemate.ui.home.HomeViewModel;
+import com.example.hikemate.utils.GetMeCallback;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.example.hikemate.services.HikeSpotService;
@@ -62,7 +67,8 @@ public class MainActivity extends AppCompatActivity{
     private String accessToken = null;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private String chatId = null;
-    private Button logOutButton;
+    private Button logOutButton, getMeButton;
+    private HomeViewModel homeViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +76,9 @@ public class MainActivity extends AppCompatActivity{
 //        setContentView(R.layout.activity_main);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        homeViewModel.setHeight(height);
 
         logOutButton = findViewById(R.id.logout_button);
 
@@ -80,6 +89,32 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
+//        getMeButton = findViewById(R.id.getme_button);
+//
+//        getMeButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String token = "Bearer " + getAccessTokenFromSharedPreferences();
+//                Log.d("GetMe", token);
+//                getMe(token, new GetMeCallback() {
+//                    @Override
+//                    public void onSuccess(String name, String country) {
+//                        Log.d("GetMe", "Retrieved Name: " + name);
+//                        Log.d("GetMe", "Retrieved Country: " + country);
+//                        homeViewModel.setName(name);
+//                        homeViewModel.setCountry(country);
+//                    }
+//
+//                    @Override
+//                    public void onError(String error) {
+//                        Log.e("GetMe", "Error: " + error);
+//                    }
+//                });
+//            }
+//        });
+
+//        getMe("Bearer " + getAccessTokenFromSharedPreferences());
+//        homeViewModel.setName(place);
         Log.d("ChatID", "Chat ID: " + chatId);
 
         HikeSpotApi apiService = RetrofitClient.getHikeSpotApi();
@@ -117,15 +152,31 @@ public class MainActivity extends AppCompatActivity{
                     HikeSpotService hikeSpotService = new HikeSpotService(apiService);
                     HikeSpotCallback callback = new HikeSpotCallbackImpl(new ResultHandler() {
                         @Override
-                        public void onResult(String chatId) {
+                        public void onResult(String chatId, String place) {
                             chatId = chatId;
                             Log.d("ChatID", "Chat ID: " + chatId);
+                            Log.d("Place", "Place: " + place);
+                            homeViewModel.setPlace(place);
                             FallDetection fallDetection = new FallDetection(MainActivity.this, latitude, longitude, height, chatId, accessToken);
                             fallDetection.start();
                         }
 
                         @Override
                         public void onError(Throwable throwable) {
+                        }
+                    });
+                    getMe(accessToken, new GetMeCallback() {
+                        @Override
+                        public void onSuccess(String name, String country) {
+                            Log.d("GetMe", "Retrieved Name: " + name);
+                            Log.d("GetMe", "Retrieved Country: " + country);
+                            homeViewModel.setName(name);
+                            homeViewModel.setCountry(country);
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            Log.e("GetMe", "Error: " + error);
                         }
                     });
                     hikeSpotService.getHikeSpots(latitude, longitude, "Bearer " + accessToken, callback);
@@ -168,6 +219,36 @@ public class MainActivity extends AppCompatActivity{
     private String getAccessTokenFromSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         return sharedPreferences.getString("accessToken", "");
+    }
+
+    private void getMe(String token, GetMeCallback callback) {
+        AuthApi authService = RetrofitClient.getAuthApi();
+        Call<MeResponse> call = authService.validateToken("Bearer " + token);
+        call.enqueue(new Callback<MeResponse>() {
+            @Override
+            public void onResponse(Call<MeResponse> call, Response<MeResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserProfile userProfile = response.body().getData();
+                    Log.d("GetMe", "User  ID: " + userProfile.getId());
+                    Log.d("GetMe", "Name: " + userProfile.getName());
+                    Log.d("GetMe", "Email: " + userProfile.getEmail());
+                    Log.d("GetMe", "Country: " + userProfile.getCountry());
+                    Log.d("GetMe", "Birth Date: " + userProfile.getBirthDate());
+                    Log.d("GetMe", "Role: " + userProfile.getRole());
+                    Log.d("GetMe", "Image Path: " + userProfile.getImagePath());
+
+                    callback.onSuccess(userProfile.getName(), userProfile.getCountry());
+                } else {
+                    Log.e("GetMe", "Response error: " + response.code());
+                    callback.onError("Response error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MeResponse> call, Throwable t) {
+                callback.onError("API call failed: " + t.getMessage());
+            }
+        });
     }
 
     // [BEGIN] REALTIME LOCATION
