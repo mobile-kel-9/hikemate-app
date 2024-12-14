@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -28,6 +29,7 @@ import com.example.hikemate.model.UserProfile;
 import com.example.hikemate.network.AuthApi;
 import com.example.hikemate.network.HikeSpotApi;
 import com.example.hikemate.network.RetrofitClient;
+import com.example.hikemate.ui.home.HomeViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.example.hikemate.services.HikeSpotService;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity{
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private String chatId = null;
     private Button logOutButton, getMeButton;
+    private HomeViewModel homeViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +75,9 @@ public class MainActivity extends AppCompatActivity{
 //        setContentView(R.layout.activity_main);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        homeViewModel.setHeight(height);
 
         logOutButton = findViewById(R.id.logout_button);
 
@@ -133,6 +139,7 @@ public class MainActivity extends AppCompatActivity{
                             chatId = chatId;
                             Log.d("ChatID", "Chat ID: " + chatId);
                             Log.d("Place", "Place: " + place);
+                            homeViewModel.setPlace(place);
                             FallDetection fallDetection = new FallDetection(MainActivity.this, latitude, longitude, height, chatId, accessToken);
                             fallDetection.start();
                         }

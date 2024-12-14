@@ -8,23 +8,45 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.hikemate.R;
 import com.example.hikemate.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
-
+    private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+    }
 
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        return root;
+        TextView placeTextView = view.findViewById(R.id.mountain_name);
+        TextView heightTextView = view.findViewById(R.id.current_height);
+
+        homeViewModel.getPlace().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String place) {
+                placeTextView.setText(place);
+            }
+        });
+
+        homeViewModel.getHeight().observe(getViewLifecycleOwner(), new Observer<Float>() {
+            @Override
+            public void onChanged(Float height) {
+                heightTextView.setText(String.valueOf(height));
+            }
+        });
+
+        return view;
     }
 
     @Override
