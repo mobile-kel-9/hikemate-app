@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/shades_50"
+    android:background="@color/white"
     tools:context=".ui.home.HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,11 +20,12 @@
             <LinearLayout
                 android:id="@+id/top_bar_layout"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="175dp"
                 android:background="@drawable/banner_topbar"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:paddingTop="10dp">
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -51,8 +52,8 @@
                 </LinearLayout>
 
                 <ImageView
-                    android:layout_width="144dp"
-                    android:layout_height="125dp"
+                    android:layout_width="106dp"
+                    android:layout_height="94dp"
                     android:layout_marginStart="10dp"
                     android:src="@drawable/illustration_topbar" />
             </LinearLayout>
@@ -66,7 +67,7 @@
                 <LinearLayout
                     android:id="@+id/banner_linear_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="185dp"
+                    android:layout_height="165dp"
                     android:layout_marginTop="20dp"
                     android:background="@drawable/banner_home"
                     android:gravity="center"
@@ -77,7 +78,7 @@
                     android:paddingBottom="12dp">
 
                     <LinearLayout
-                        android:layout_width="190dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:background="@android:color/transparent"
@@ -87,20 +88,20 @@
                             android:id="@+id/header"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="36dp"
+                            android:layout_marginBottom="16dp"
                             android:fontFamily="@font/sora_bold"
                             android:text="Kamu Sedang Mendaki"
                             android:textColor="@color/white"
-                            android:textSize="22sp" />
+                            android:textSize="20sp" />
 
                         <TextView
                             android:id="@+id/subtitle"
-                            android:layout_width="wrap_content"
+                            android:layout_width="175sp"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sora_semibold"
-                            android:text="Gunung Dian Regency"
+                            android:text="Gunung Sukolilo"
                             android:textColor="@color/gray_600"
-                            android:textSize="16sp" />
+                            android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/paragraph"
@@ -114,8 +115,8 @@
 
                     <ImageView
                         android:id="@+id/illustration_banner"
-                        android:layout_width="135dp"
-                        android:layout_height="135dp"
+                        android:layout_width="115sp"
+                        android:layout_height="115sp"
                         android:layout_marginStart="16dp"
                         android:src="@drawable/illustration_banner" />
                 </LinearLayout>
