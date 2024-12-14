@@ -1,11 +1,16 @@
 package com.example.hikemate;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.hikemate.model.SOSRequest;
 import com.example.hikemate.model.SOSResponse;
@@ -77,14 +82,43 @@ public class FallDetection implements SensorEventListener {
             @Override
             public void onSuccess(SOSResponse sosResponse) {
                 Log.d("FallDetection", "SOS sent successfully");
+                showSosPopup(true);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 Log.e("FallDetection", "Failed to send SOS", throwable);
+                showSosPopup(false);
             }
         });
     }
+
+    private void showSosPopup(boolean isSuccess) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View popupView = inflater.inflate(R.layout.popup_sos, null);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(popupView);
+
+        TextView messageTextView = popupView.findViewById(R.id.messageTextSOSView);
+        if (isSuccess) {
+            messageTextView.setText("SOS sent successfully!");
+        } else {
+            messageTextView.setText("Failed to send SOS. Please try again.");
+        }
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {

@@ -32,7 +32,7 @@
         app:layout_constraintTop_toBottomOf="@+id/iv_illust_history" />
 
     <TextView
-        android:id="@+id/tv_advice"
+        android:id="@+id/messageTextSOSView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -46,7 +46,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_mental_health" />
 
     <Button
-        android:id="@+id/logout_button"
+        android:id="@+id/back_btn"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginTop="12sp"
@@ -55,8 +55,8 @@
         android:textSize="12sp"
         app:cornerRadius="8dp"
         android:fontFamily="@font/sora_semibold"
-        app:layout_constraintEnd_toEndOf="@+id/tv_advice"
-        app:layout_constraintStart_toStartOf="@+id/tv_advice"
-        app:layout_constraintTop_toBottomOf="@+id/tv_advice" />
+        app:layout_constraintEnd_toEndOf="@+id/messageTextSOSView"
+        app:layout_constraintStart_toStartOf="@+id/messageTextSOSView"
+        app:layout_constraintTop_toBottomOf="@+id/messageTextSOSView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
