@@ -28,5 +28,8 @@ public class RetrofitClient {
     public static HikeSpotApi getHikeSpotApi() {
         return getInstance().create(HikeSpotApi.class);
     }
+    public static AuthApi getAuthApi() {
+        return getInstance().create(AuthApi.class);
+    }
 }
 

@@ -23,6 +23,8 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.hikemate.databinding.ActivityMainBinding;
 import com.example.hikemate.model.HikeSpot;
 import com.example.hikemate.model.HikeSpotResponse;
+import com.example.hikemate.model.MeResponse;
+import com.example.hikemate.model.UserProfile;
 import com.example.hikemate.network.AuthApi;
 import com.example.hikemate.network.HikeSpotApi;
 import com.example.hikemate.network.RetrofitClient;
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity{
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private String chatId = null;
     private Button logOutButton;
+    private AuthApi authService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +86,8 @@ public class MainActivity extends AppCompatActivity{
         Log.d("ChatID", "Chat ID: " + chatId);
 
         HikeSpotApi apiService = RetrofitClient.getHikeSpotApi();
+        AuthApi authService = RetrofitClient.getAuthApi();
+
 
 //        barometerUtil = new BarometerUtil(this, new BarometerUtil.AltitudeCallback() {
 //            @Override
@@ -168,6 +173,32 @@ public class MainActivity extends AppCompatActivity{
     private String getAccessTokenFromSharedPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
         return sharedPreferences.getString("accessToken", "");
+    }
+
+    private void getMe(String token) {
+        Call<MeResponse> call = authService.validateToken(token);
+        call.enqueue(new Callback<MeResponse>() {
+            @Override
+            public void onResponse(Call<MeResponse> call, Response<MeResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserProfile userProfile = response.body().getData();
+                    Log.d("GetMe", "User  ID: " + userProfile.getId());
+                    Log.d("GetMe", "Name: " + userProfile.getName());
+                    Log.d("GetMe", "Email: " + userProfile.getEmail());
+                    Log.d("GetMe", "Country: " + userProfile.getCountry());
+                    Log.d("GetMe", "Birth Date: " + userProfile.getBirthDate());
+                    Log.d("GetMe", "Role: " + userProfile.getRole());
+                    Log.d("GetMe", "Image Path: " + userProfile.getImagePath());
+                } else {
+                    Log.e("GetMe", "Response error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MeResponse> call, Throwable t) {
+                Log.e("GetMe", "API call failed: " + t.getMessage());
+            }
+        });
     }
 
     // [BEGIN] REALTIME LOCATION
