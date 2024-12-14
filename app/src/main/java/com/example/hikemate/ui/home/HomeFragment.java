@@ -44,7 +44,7 @@ public class HomeFragment extends Fragment {
         homeViewModel.getHeight().observe(getViewLifecycleOwner(), new Observer<Float>() {
             @Override
             public void onChanged(Float height) {
-                heightTextView.setText(String.valueOf(height));
+                heightTextView.setText(String.valueOf(height) + " mdpl");
             }
         });
         homeViewModel.getName().observe(getViewLifecycleOwner(), new Observer<String>() {
