@@ -174,6 +174,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void getMe(String token) {
+        Log.d("GetMe", "Access Token sent to GET ME: " + token);
         AuthApi authService = RetrofitClient.getAuthApi();
         Call<MeResponse> call = authService.validateToken(token);
         call.enqueue(new Callback<MeResponse>() {
