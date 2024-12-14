@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 String token = "Bearer " + getAccessTokenFromSharedPreferences();
+                Log.d("GetMe", token);
                 getMe(token, new GetMeCallback() {
                     @Override
                     public void onSuccess(String name, String country) {
