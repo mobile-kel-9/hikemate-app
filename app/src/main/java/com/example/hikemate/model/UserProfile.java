@@ -5,9 +5,9 @@ public class UserProfile {
     private String name;
     private String email;
     private String country;
-    private String birthDate;
+    private String birth_date;
     private String role;
-    private String imagePath;
+    private String image_path;
 
     public String getId() {
         return id;
@@ -26,7 +26,7 @@ public class UserProfile {
     }
 
     public String getBirthDate() {
-        return birthDate;
+        return birth_date;
     }
 
     public String getRole() {
@@ -34,6 +34,6 @@ public class UserProfile {
     }
 
     public String getImagePath() {
-        return imagePath;
+        return image_path;
     }
 }
