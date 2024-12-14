@@ -47,17 +47,17 @@ public class HomeFragment extends Fragment {
                 heightTextView.setText(String.valueOf(height));
             }
         });
-        homeViewModel.getPlace().observe(getViewLifecycleOwner(), new Observer<String>() {
+        homeViewModel.getName().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String place) {
-                placeTextView.setText(place);
+                nameTextView.setText(place);
             }
         });
 
         homeViewModel.getCountry().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String country) {
-                heightTextView.setText(country);
+                countryTextView.setText(country);
             }
         });
 

@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity{
                         public void onError(Throwable throwable) {
                         }
                     });
-                    getMe("Bearer " + accessToken, new GetMeCallback() {
+                    getMe(accessToken, new GetMeCallback() {
                         @Override
                         public void onSuccess(String name, String country) {
                             Log.d("GetMe", "Retrieved Name: " + name);
