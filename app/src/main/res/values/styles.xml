@@ -18,4 +18,14 @@
     <style name="TextInputEditTextStyle" parent="input_form_outline">
         <!-- Add any additional attributes specific to TextInputEditText here -->
     </style>
+
+    <style name="CustomBottomNavTextAppearance" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:fontFamily">@font/sora_extralight</item> <!-- Custom font -->
+        <item name="android:textSize">10sp</item> <!-- Smaller text -->
+        <item name="android:letterSpacing">0.05</item> <!-- Narrower spacing -->
+    </style>
+    <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="itemTextAppearanceActive">@style/CustomBottomNavTextAppearance</item>
+        <item name="itemTextAppearanceInactive">@style/CustomBottomNavTextAppearance</item>
+    </style>
 </resources>
