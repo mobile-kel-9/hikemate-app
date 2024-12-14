@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity{
     private void getMe(String token) {
         Log.d("GetMe", "Access Token sent to GET ME: " + token);
         AuthApi authService = RetrofitClient.getAuthApi();
-        Call<MeResponse> call = authService.validateToken(token);
+        Call<MeResponse> call = authService.validateToken("Bearer " + token);
         call.enqueue(new Callback<MeResponse>() {
             @Override
             public void onResponse(Call<MeResponse> call, Response<MeResponse> response) {
