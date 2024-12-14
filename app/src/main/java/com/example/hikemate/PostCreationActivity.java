@@ -48,6 +48,7 @@ public class PostCreationActivity extends AppCompatActivity {
     private static final int REQUEST_TAKE_PHOTO = 2;
     private static final int REQUEST_CHOOSE_FILE = 1;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
+    private static int CHOOSE_FILE_FLAG = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +82,7 @@ public class PostCreationActivity extends AppCompatActivity {
         intent.setType("image/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(Intent.createChooser(intent, "Select a file"), REQUEST_CHOOSE_FILE);
+        CHOOSE_FILE_FLAG = 1;
     }
 
     private void takePicture() {
@@ -141,13 +143,8 @@ public class PostCreationActivity extends AppCompatActivity {
             throw new IOException("External storage is not available");
         }
 
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
 
-        // Save a file: path for use with ACTION_VIEW intents
         if (image == null) {
             throw new IOException("Failed to create image file");
         }
@@ -188,8 +185,16 @@ public class PostCreationActivity extends AppCompatActivity {
             return;
         }
 
-//        MultipartBody.Part filePart = createFilePart("file", selectedFileUri);
-        MultipartBody.Part filePart = prepareFilePart("file", selectedFileUri);
+        Log.d("SubmitPost", "CHOOSE_FILE_FLAG: " + CHOOSE_FILE_FLAG);
+
+        MultipartBody.Part filePart;
+
+        if (CHOOSE_FILE_FLAG == 1) {
+            filePart = createFilePart("file", selectedFileUri);
+        }
+        else {
+            filePart = prepareFilePart("file", selectedFileUri);
+        }
 
         RequestBody titlePart = RequestBody.create(MediaType.parse("text/plain"), title);
         RequestBody contentPart = RequestBody.create(MediaType.parse("text/plain"), content);
@@ -227,7 +232,6 @@ public class PostCreationActivity extends AppCompatActivity {
 
     private MultipartBody.Part prepareFilePart(String partName, Uri fileUri) {
         try {
-            // Get the actual file path from the content URI
             InputStream inputStream = getContentResolver().openInputStream(fileUri);
             File file = new File(getCacheDir(), "temp_image.jpg"); // Temporary file in cache directory
 
@@ -241,7 +245,6 @@ public class PostCreationActivity extends AppCompatActivity {
             inputStream.close();
             outputStream.close();
 
-            // Create RequestBody from the file
             RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
             return MultipartBody.Part.createFormData(partName, file.getName(), requestFile);
         } catch (IOException e) {
