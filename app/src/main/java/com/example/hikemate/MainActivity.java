@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity{
     private String accessToken = null;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private String chatId = null;
-    private Button logOutButton;
+    private Button logOutButton, getMeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +79,16 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 handleLogout();
+            }
+        });
+
+        getMeButton = findViewById(R.id.getme_button);
+
+        getMeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String token = getAccessTokenFromSharedPreferences();
+                getMe(token);
             }
         });
 
@@ -130,7 +140,7 @@ public class MainActivity extends AppCompatActivity{
                         public void onError(Throwable throwable) {
                         }
                     });
-                    getMe(accessToken);
+//                    getMe(accessToken);
                     hikeSpotService.getHikeSpots(latitude, longitude, "Bearer " + accessToken, callback);
                 }
             }
