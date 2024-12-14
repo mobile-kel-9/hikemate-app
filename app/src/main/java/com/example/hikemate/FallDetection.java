@@ -10,6 +10,7 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.hikemate.model.SOSRequest;
@@ -102,23 +103,23 @@ public class FallDetection implements SensorEventListener {
 
         TextView messageTextView = popupView.findViewById(R.id.messageTextSOSView);
         if (isSuccess) {
-            messageTextView.setText("SOS sent successfully!");
+            messageTextView.setText("Sensor aplikasi mendeteksi gerakan yang tidak wajar di HP-mu, sinyal SOS sudah dikirim ke pihak berwenang terdekat!");
         } else {
-            messageTextView.setText("Failed to send SOS. Please try again.");
+            messageTextView.setText("");
         }
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        AlertDialog dialog = builder.create();
+
+        Button okButton = popupView.findViewById(R.id.back_btn);
+        okButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(View v) {
                 dialog.dismiss();
             }
         });
 
-        AlertDialog dialog = builder.create();
         dialog.show();
     }
-
-
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
