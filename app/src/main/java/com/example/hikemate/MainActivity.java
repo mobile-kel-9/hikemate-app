@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity{
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private String chatId = null;
     private Button logOutButton;
-    private AuthApi authService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +85,6 @@ public class MainActivity extends AppCompatActivity{
         Log.d("ChatID", "Chat ID: " + chatId);
 
         HikeSpotApi apiService = RetrofitClient.getHikeSpotApi();
-        AuthApi authService = RetrofitClient.getAuthApi();
-
 
 //        barometerUtil = new BarometerUtil(this, new BarometerUtil.AltitudeCallback() {
 //            @Override
@@ -133,6 +130,7 @@ public class MainActivity extends AppCompatActivity{
                         public void onError(Throwable throwable) {
                         }
                     });
+                    getMe(accessToken);
                     hikeSpotService.getHikeSpots(latitude, longitude, "Bearer " + accessToken, callback);
                 }
             }
@@ -176,6 +174,7 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void getMe(String token) {
+        AuthApi authService = RetrofitClient.getAuthApi();
         Call<MeResponse> call = authService.validateToken(token);
         call.enqueue(new Callback<MeResponse>() {
             @Override
