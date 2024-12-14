@@ -3,10 +3,12 @@ package com.example.hikemate;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -46,6 +48,7 @@ public class PostCreationActivity extends AppCompatActivity {
     private static final int REQUEST_TAKE_PHOTO = 2;
     private static final int REQUEST_CHOOSE_FILE = 1;
     private static final int REQUEST_CAMERA_PERMISSION = 1;
+    private static int CHOOSE_FILE_FLAG = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +79,10 @@ public class PostCreationActivity extends AppCompatActivity {
 
     private void chooseFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
+        intent.setType("image/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(Intent.createChooser(intent, "Choose File"), REQUEST_CHOOSE_FILE);
+        CHOOSE_FILE_FLAG = 1;
     }
 
     private void takePicture() {
@@ -102,6 +107,31 @@ public class PostCreationActivity extends AppCompatActivity {
                 }
             }
         }
+        CHOOSE_FILE_FLAG = 0;
+    }
+
+    private String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            if (cursor != null) {
+                try {
+                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (nameIndex != -1 && cursor.moveToFirst()) {
+                        result = cursor.getString(nameIndex);
+                    }
+                } finally {
+                    cursor.close();
+                }
+            }
+        }
+
+        // If the scheme is 'file', get the file name directly
+        if (result == null) {
+            result = uri.getLastPathSegment();
+        }
+
+        return result;
     }
 
     private File createImageFile() throws IOException {
@@ -114,13 +144,8 @@ public class PostCreationActivity extends AppCompatActivity {
             throw new IOException("External storage is not available");
         }
 
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
 
-        // Save a file: path for use with ACTION_VIEW intents
         if (image == null) {
             throw new IOException("Failed to create image file");
         }
@@ -129,11 +154,21 @@ public class PostCreationActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Log.d("PostCreation", "Activity result: " + " " + requestCode + " " + resultCode + " " + data);
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CHOOSE_FILE && resultCode == RESULT_OK && data != null) {
-            selectedFileUri = data.getData();
-            String fileName = selectedFileUri.getLastPathSegment();
-            textViewFileName.setText(fileName);
+        if (requestCode == REQUEST_CHOOSE_FILE && resultCode == RESULT_OK) {
+            if (data != null) {
+                selectedFileUri = data.getData();
+                if (selectedFileUri != null) {
+                    String fileName = getFileName(selectedFileUri);
+                    textViewFileName.setText(fileName);
+                }
+                Log.d("PostCreation", "Selected file URI: " + selectedFileUri.toString());
+                Log.d("PostCreation", "Last path segment: " + selectedFileUri.getLastPathSegment());
+            }
+            else {
+                Log.d("PostCreation", "File tidak masuk");
+            }
         } else if (requestCode == REQUEST_TAKE_PHOTO && resultCode == RESULT_OK) {
             String fileName = cameraImageUri.getLastPathSegment();
             textViewFileName.setText(fileName);
@@ -151,8 +186,10 @@ public class PostCreationActivity extends AppCompatActivity {
             return;
         }
 
-//        MultipartBody.Part filePart = createFilePart("file", selectedFileUri);
-        MultipartBody.Part filePart = prepareFilePart("file", selectedFileUri);
+        Log.d("SubmitPost", "CHOOSE_FILE_FLAG: " + CHOOSE_FILE_FLAG);
+
+        MultipartBody.Part filePart;
+        filePart = prepareFilePart("file", selectedFileUri);
 
         RequestBody titlePart = RequestBody.create(MediaType.parse("text/plain"), title);
         RequestBody contentPart = RequestBody.create(MediaType.parse("text/plain"), content);
@@ -190,7 +227,6 @@ public class PostCreationActivity extends AppCompatActivity {
 
     private MultipartBody.Part prepareFilePart(String partName, Uri fileUri) {
         try {
-            // Get the actual file path from the content URI
             InputStream inputStream = getContentResolver().openInputStream(fileUri);
             File file = new File(getCacheDir(), "temp_image.jpg"); // Temporary file in cache directory
 
@@ -204,7 +240,6 @@ public class PostCreationActivity extends AppCompatActivity {
             inputStream.close();
             outputStream.close();
 
-            // Create RequestBody from the file
             RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), file);
             return MultipartBody.Part.createFormData(partName, file.getName(), requestFile);
         } catch (IOException e) {
