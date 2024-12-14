@@ -129,9 +129,10 @@ public class MainActivity extends AppCompatActivity{
                     HikeSpotService hikeSpotService = new HikeSpotService(apiService);
                     HikeSpotCallback callback = new HikeSpotCallbackImpl(new ResultHandler() {
                         @Override
-                        public void onResult(String chatId) {
+                        public void onResult(String chatId, String place) {
                             chatId = chatId;
                             Log.d("ChatID", "Chat ID: " + chatId);
+                            Log.d("Place", "Place: " + place);
                             FallDetection fallDetection = new FallDetection(MainActivity.this, latitude, longitude, height, chatId, accessToken);
                             fallDetection.start();
                         }
@@ -194,6 +195,7 @@ public class MainActivity extends AppCompatActivity{
                     UserProfile userProfile = response.body().getData();
                     Log.d("GetMe", "User  ID: " + userProfile.getId());
                     Log.d("GetMe", "Name: " + userProfile.getName());
+//                    Toast.makeText(getApplicationContext(), "Name: " + userProfile.getName(), Toast.LENGTH_SHORT).show();
                     Log.d("GetMe", "Email: " + userProfile.getEmail());
                     Log.d("GetMe", "Country: " + userProfile.getCountry());
                     Log.d("GetMe", "Birth Date: " + userProfile.getBirthDate());
@@ -201,6 +203,7 @@ public class MainActivity extends AppCompatActivity{
                     Log.d("GetMe", "Image Path: " + userProfile.getImagePath());
                 } else {
                     Log.e("GetMe", "Response error: " + response.code());
+//                    Toast.makeText(getApplicationContext(), "Response error: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 
