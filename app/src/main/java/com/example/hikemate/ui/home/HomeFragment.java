@@ -31,6 +31,8 @@ public class HomeFragment extends Fragment {
 
         TextView placeTextView = view.findViewById(R.id.mountain_name);
         TextView heightTextView = view.findViewById(R.id.current_height);
+        TextView nameTextView = view.findViewById(R.id.current_username);
+        TextView countryTextView = view.findViewById(R.id.user_country);
 
         homeViewModel.getPlace().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -43,6 +45,19 @@ public class HomeFragment extends Fragment {
             @Override
             public void onChanged(Float height) {
                 heightTextView.setText(String.valueOf(height));
+            }
+        });
+        homeViewModel.getPlace().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String place) {
+                placeTextView.setText(place);
+            }
+        });
+
+        homeViewModel.getCountry().observe(getViewLifecycleOwner(), new Observer<String>() {
+            @Override
+            public void onChanged(String country) {
+                heightTextView.setText(country);
             }
         });
 

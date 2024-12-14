@@ -30,6 +30,7 @@ import com.example.hikemate.network.AuthApi;
 import com.example.hikemate.network.HikeSpotApi;
 import com.example.hikemate.network.RetrofitClient;
 import com.example.hikemate.ui.home.HomeViewModel;
+import com.example.hikemate.utils.GetMeCallback;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.example.hikemate.services.HikeSpotService;
@@ -93,11 +94,26 @@ public class MainActivity extends AppCompatActivity{
         getMeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String token = getAccessTokenFromSharedPreferences();
-                getMe(token);
+                String token = "Bearer " + getAccessTokenFromSharedPreferences();
+                getMe(token, new GetMeCallback() {
+                    @Override
+                    public void onSuccess(String name, String country) {
+                        Log.d("GetMe", "Retrieved Name: " + name);
+                        Log.d("GetMe", "Retrieved Country: " + country);
+                        homeViewModel.setName(name);
+                        homeViewModel.setCountry(country);
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Log.e("GetMe", "Error: " + error);
+                    }
+                });
             }
         });
 
+//        getMe("Bearer " + getAccessTokenFromSharedPreferences());
+//        homeViewModel.setName(place);
         Log.d("ChatID", "Chat ID: " + chatId);
 
         HikeSpotApi apiService = RetrofitClient.getHikeSpotApi();
@@ -191,8 +207,7 @@ public class MainActivity extends AppCompatActivity{
         return sharedPreferences.getString("accessToken", "");
     }
 
-    private void getMe(String token) {
-        Log.d("GetMe", "Access Token sent to GET ME: " + token);
+    private void getMe(String token, GetMeCallback callback) {
         AuthApi authService = RetrofitClient.getAuthApi();
         Call<MeResponse> call = authService.validateToken("Bearer " + token);
         call.enqueue(new Callback<MeResponse>() {
@@ -202,21 +217,22 @@ public class MainActivity extends AppCompatActivity{
                     UserProfile userProfile = response.body().getData();
                     Log.d("GetMe", "User  ID: " + userProfile.getId());
                     Log.d("GetMe", "Name: " + userProfile.getName());
-//                    Toast.makeText(getApplicationContext(), "Name: " + userProfile.getName(), Toast.LENGTH_SHORT).show();
                     Log.d("GetMe", "Email: " + userProfile.getEmail());
                     Log.d("GetMe", "Country: " + userProfile.getCountry());
                     Log.d("GetMe", "Birth Date: " + userProfile.getBirthDate());
                     Log.d("GetMe", "Role: " + userProfile.getRole());
                     Log.d("GetMe", "Image Path: " + userProfile.getImagePath());
+
+                    callback.onSuccess(userProfile.getName(), userProfile.getCountry());
                 } else {
                     Log.e("GetMe", "Response error: " + response.code());
-//                    Toast.makeText(getApplicationContext(), "Response error: " + response.code(), Toast.LENGTH_SHORT).show();
+                    callback.onError("Response error: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<MeResponse> call, Throwable t) {
-                Log.e("GetMe", "API call failed: " + t.getMessage());
+                callback.onError("API call failed: " + t.getMessage());
             }
         });
     }

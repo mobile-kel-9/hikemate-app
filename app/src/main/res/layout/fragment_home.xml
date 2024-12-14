@@ -33,7 +33,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/tv_hi_user"
+                        android:id="@+id/current_username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/sora_bold"
@@ -42,7 +42,7 @@
                         android:textSize="24sp" />
 
                     <TextView
-                        android:id="@+id/tv_ready_practice"
+                        android:id="@+id/user_country"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/sora_regular"

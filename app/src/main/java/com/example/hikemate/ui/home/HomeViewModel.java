@@ -8,6 +8,8 @@ public class HomeViewModel extends ViewModel {
 
     private final MutableLiveData<String> place = new MutableLiveData<>();
     private final MutableLiveData<Float> height = new MutableLiveData<>();
+    private final MutableLiveData<String> name = new MutableLiveData<>();
+    private final MutableLiveData<String> country = new MutableLiveData<>();
 
     public void setPlace(String place) {
         this.place.setValue(place);
@@ -23,5 +25,21 @@ public class HomeViewModel extends ViewModel {
 
     public LiveData<Float> getHeight() {
         return height;
+    }
+
+    public void setName(String name) {
+        this.name.setValue(name);
+    }
+
+    public LiveData<String> getName() {
+        return name;
+    }
+
+    public void setCountry(String country) {
+        this.country.setValue(country);
+    }
+
+    public LiveData<String> getCountry() {
+        return country;
     }
 }
