@@ -89,29 +89,29 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        getMeButton = findViewById(R.id.getme_button);
-
-        getMeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String token = "Bearer " + getAccessTokenFromSharedPreferences();
-                Log.d("GetMe", token);
-                getMe(token, new GetMeCallback() {
-                    @Override
-                    public void onSuccess(String name, String country) {
-                        Log.d("GetMe", "Retrieved Name: " + name);
-                        Log.d("GetMe", "Retrieved Country: " + country);
-                        homeViewModel.setName(name);
-                        homeViewModel.setCountry(country);
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        Log.e("GetMe", "Error: " + error);
-                    }
-                });
-            }
-        });
+//        getMeButton = findViewById(R.id.getme_button);
+//
+//        getMeButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                String token = "Bearer " + getAccessTokenFromSharedPreferences();
+//                Log.d("GetMe", token);
+//                getMe(token, new GetMeCallback() {
+//                    @Override
+//                    public void onSuccess(String name, String country) {
+//                        Log.d("GetMe", "Retrieved Name: " + name);
+//                        Log.d("GetMe", "Retrieved Country: " + country);
+//                        homeViewModel.setName(name);
+//                        homeViewModel.setCountry(country);
+//                    }
+//
+//                    @Override
+//                    public void onError(String error) {
+//                        Log.e("GetMe", "Error: " + error);
+//                    }
+//                });
+//            }
+//        });
 
 //        getMe("Bearer " + getAccessTokenFromSharedPreferences());
 //        homeViewModel.setName(place);
@@ -165,7 +165,20 @@ public class MainActivity extends AppCompatActivity{
                         public void onError(Throwable throwable) {
                         }
                     });
-//                    getMe(accessToken);
+                    getMe("Bearer " + accessToken, new GetMeCallback() {
+                        @Override
+                        public void onSuccess(String name, String country) {
+                            Log.d("GetMe", "Retrieved Name: " + name);
+                            Log.d("GetMe", "Retrieved Country: " + country);
+                            homeViewModel.setName(name);
+                            homeViewModel.setCountry(country);
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            Log.e("GetMe", "Error: " + error);
+                        }
+                    });
                     hikeSpotService.getHikeSpots(latitude, longitude, "Bearer " + accessToken, callback);
                 }
             }
