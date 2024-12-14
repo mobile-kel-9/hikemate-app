@@ -81,7 +81,7 @@ public class PostCreationActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(Intent.createChooser(intent, "Select a file"), REQUEST_CHOOSE_FILE);
+        startActivityForResult(Intent.createChooser(intent, "Choose File"), REQUEST_CHOOSE_FILE);
         CHOOSE_FILE_FLAG = 1;
     }
 
@@ -107,6 +107,7 @@ public class PostCreationActivity extends AppCompatActivity {
                 }
             }
         }
+        CHOOSE_FILE_FLAG = 0;
     }
 
     private String getFileName(Uri uri) {
@@ -188,13 +189,7 @@ public class PostCreationActivity extends AppCompatActivity {
         Log.d("SubmitPost", "CHOOSE_FILE_FLAG: " + CHOOSE_FILE_FLAG);
 
         MultipartBody.Part filePart;
-
-        if (CHOOSE_FILE_FLAG == 1) {
-            filePart = createFilePart("file", selectedFileUri);
-        }
-        else {
-            filePart = prepareFilePart("file", selectedFileUri);
-        }
+        filePart = prepareFilePart("file", selectedFileUri);
 
         RequestBody titlePart = RequestBody.create(MediaType.parse("text/plain"), title);
         RequestBody contentPart = RequestBody.create(MediaType.parse("text/plain"), content);
