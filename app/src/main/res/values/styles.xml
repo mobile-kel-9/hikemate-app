@@ -1,7 +1,7 @@
 <resources>
     <!-- Custom button style -->
     <style name="button_fill" parent="Widget.MaterialComponents.Button">
-        <item name="android:backgroundTint">@color/green_primary</item>
+        <item name="android:backgroundTint">@color/green_800</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:fontFamily">@font/sora_semibold</item>
         <item name="android:padding">16dp</item>
