@@ -49,8 +49,8 @@ public class HomeFragment extends Fragment {
         });
         homeViewModel.getName().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
-            public void onChanged(String place) {
-                nameTextView.setText(place);
+            public void onChanged(String name) {
+                nameTextView.setText("Hi, " + name);
             }
         });
 
