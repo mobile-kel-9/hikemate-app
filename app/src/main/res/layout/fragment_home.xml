@@ -139,23 +139,10 @@
                     android:textSize="20sp" />
             </FrameLayout>
 
-            <Button
-                android:id="@+id/logout_button"
+            <FrameLayout
+                android:id="@+id/feed_fragment_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Logout"
-                app:cornerRadius="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <Button
-                android:id="@+id/getme_button"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="Get ME"
-                app:cornerRadius="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

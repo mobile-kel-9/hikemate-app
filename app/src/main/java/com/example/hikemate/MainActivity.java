@@ -80,39 +80,6 @@ public class MainActivity extends AppCompatActivity{
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         homeViewModel.setHeight(height);
 
-        logOutButton = findViewById(R.id.logout_button);
-
-        logOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleLogout();
-            }
-        });
-
-//        getMeButton = findViewById(R.id.getme_button);
-//
-//        getMeButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                String token = "Bearer " + getAccessTokenFromSharedPreferences();
-//                Log.d("GetMe", token);
-//                getMe(token, new GetMeCallback() {
-//                    @Override
-//                    public void onSuccess(String name, String country) {
-//                        Log.d("GetMe", "Retrieved Name: " + name);
-//                        Log.d("GetMe", "Retrieved Country: " + country);
-//                        homeViewModel.setName(name);
-//                        homeViewModel.setCountry(country);
-//                    }
-//
-//                    @Override
-//                    public void onError(String error) {
-//                        Log.e("GetMe", "Error: " + error);
-//                    }
-//                });
-//            }
-//        });
-
 //        getMe("Bearer " + getAccessTokenFromSharedPreferences());
 //        homeViewModel.setName(place);
         Log.d("ChatID", "Chat ID: " + chatId);
