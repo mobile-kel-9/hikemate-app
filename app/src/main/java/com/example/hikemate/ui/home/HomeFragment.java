@@ -1,27 +1,36 @@
 package com.example.hikemate.ui.home;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.hikemate.PostCreationActivity;
 import com.example.hikemate.R;
 import com.example.hikemate.databinding.FragmentHomeBinding;
-import com.example.hikemate.ui.feed.FeedFragment;
+import com.example.hikemate.model.Post;
+import com.example.hikemate.ui.feed.FeedViewModel;
+import com.example.hikemate.ui.feed.PostAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
+    private FeedViewModel feedViewModel;
+    private PostAdapter postAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,17 +38,24 @@ public class HomeFragment extends Fragment {
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         TextView placeTextView = view.findViewById(R.id.mountain_name);
         TextView heightTextView = view.findViewById(R.id.current_height);
         TextView nameTextView = view.findViewById(R.id.current_username);
         TextView countryTextView = view.findViewById(R.id.user_country);
+
+        feedViewModel = new ViewModelProvider(this).get(FeedViewModel.class);
+
+        // Setup RecyclerView
+        binding.recyclerViewPostsHome.setLayoutManager(new LinearLayoutManager(getContext()));
+        postAdapter = new PostAdapter(getContext(), new ArrayList<>());
+        binding.recyclerViewPostsHome.setAdapter(postAdapter);
+        
+//        binding.swipeRefreshLayout.setOnRefreshListener(this::refreshPosts);
 
         homeViewModel.getPlace().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
@@ -67,19 +83,32 @@ public class HomeFragment extends Fragment {
                 countryTextView.setText(country);
             }
         });
+        
+        feedViewModel.getPosts().observe(getViewLifecycleOwner(), this::updatePosts);
 
-        loadFeedFragment();
+        feedViewModel.fetchPosts(getAccessTokenFromSharedPreferences());
 
-        return binding.getRoot();
+        return view;
     }
 
-    private void loadFeedFragment() {
-        Log.d("HomeFragment", "Loading FeedFragment");
-        FeedFragment feedFragment = new FeedFragment();
-        FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.feed_fragment_container, feedFragment);
-        fragmentTransaction.commit();
+    private void updatePosts(List<Post> posts) {
+        postAdapter.setPosts(posts);
+    }
+
+    private void refreshPosts() {
+//        binding.swipeRefreshLayout.setRefreshing(true);
+
+        feedViewModel.fetchPosts(getAccessTokenFromSharedPreferences());
+
+        feedViewModel.getPosts().observe(getViewLifecycleOwner(), posts -> {
+            updatePosts(posts);
+//            binding.swipeRefreshLayout.setRefreshing(false); // Hide the refresh indicator
+        });
+    }
+
+    private String getAccessTokenFromSharedPreferences() {
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        return sharedPreferences.getString("accessToken", "");
     }
 
     @Override
