@@ -26,7 +26,7 @@ public interface AuthApi {
     @GET("auth/me")
     Call<MeResponse> validateToken(@Header("Authorization") String token);
 
-    @PATCH("auth/patch")
+    @PATCH("auth/update")
     Call<UpdateUserResponse> updateUser(
             @Header("Authorization") String token,
             @Body UpdateUserRequest updateUserRequest
