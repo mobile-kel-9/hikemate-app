@@ -10,28 +10,28 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.hikemate.databinding.FragmentNotificationsBinding;
+//import com.example.hikemate.databinding.FragmentNotificationsBinding;
 
 public class ProfileFragment extends Fragment {
 
-    private FragmentNotificationsBinding binding;
+//    private FragmentNotificationsBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         ProfileViewModel profileViewModel =
                 new ViewModelProvider(this).get(ProfileViewModel.class);
 
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-
-        final TextView textView = binding.textNotifications;
-        profileViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-        return root;
+//        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+//        View root = binding.getRoot();
+//
+//        final TextView textView = binding.textNotifications;
+//        profileViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        return null;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        binding = null;
+//    }
 }
