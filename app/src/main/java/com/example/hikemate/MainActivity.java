@@ -212,6 +212,14 @@ public class MainActivity extends AppCompatActivity{
         return sharedPreferences.getString("accessToken", "");
     }
 
+    private void setMeDataToSharedPreferences(String key, String data) {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString(key, data);
+        editor.apply();
+    }
+
     private void getMe(String token, GetMeCallback callback) {
         AuthApi authService = RetrofitClient.getAuthApi();
         Call<MeResponse> call = authService.validateToken("Bearer " + token);
@@ -227,6 +235,12 @@ public class MainActivity extends AppCompatActivity{
                     Log.d("GetMe", "Birth Date: " + userProfile.getBirthDate());
                     Log.d("GetMe", "Role: " + userProfile.getRole());
                     Log.d("GetMe", "Image Path: " + userProfile.getImagePath());
+
+                    setMeDataToSharedPreferences("name", userProfile.getName());
+                    setMeDataToSharedPreferences("email", userProfile.getEmail());
+                    setMeDataToSharedPreferences("country", userProfile.getCountry());
+                    setMeDataToSharedPreferences("birth_date", userProfile.getBirthDate());
+                    setMeDataToSharedPreferences("image_path", userProfile.getImagePath());
 
                     callback.onSuccess(userProfile.getName(), userProfile.getName(), userProfile.getCountry(), userProfile.getImagePath());
                 } else {
