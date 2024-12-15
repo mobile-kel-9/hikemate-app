@@ -1,6 +1,7 @@
 package com.example.hikemate.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +34,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         TextView placeTextView = view.findViewById(R.id.mountain_name);
         TextView heightTextView = view.findViewById(R.id.current_height);
@@ -68,10 +70,11 @@ public class HomeFragment extends Fragment {
 
         loadFeedFragment();
 
-        return view;
+        return binding.getRoot();
     }
 
     private void loadFeedFragment() {
+        Log.d("HomeFragment", "Loading FeedFragment");
         FeedFragment feedFragment = new FeedFragment();
         FragmentManager fragmentManager = getChildFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
