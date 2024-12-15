@@ -80,15 +80,6 @@ public class MainActivity extends AppCompatActivity{
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         homeViewModel.setHeight(height);
 
-        logOutButton = findViewById(R.id.logout_button);
-
-        logOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                handleLogout();
-            }
-        });
-
 //        getMeButton = findViewById(R.id.getme_button);
 //
 //        getMeButton.setOnClickListener(new View.OnClickListener() {
@@ -167,7 +158,7 @@ public class MainActivity extends AppCompatActivity{
                     });
                     getMe(accessToken, new GetMeCallback() {
                         @Override
-                        public void onSuccess(String name, String country) {
+                        public void onSuccess(String name, String email, String country, String image_path) {
                             Log.d("GetMe", "Retrieved Name: " + name);
                             Log.d("GetMe", "Retrieved Country: " + country);
                             homeViewModel.setName(name);
@@ -221,6 +212,14 @@ public class MainActivity extends AppCompatActivity{
         return sharedPreferences.getString("accessToken", "");
     }
 
+    private void setMeDataToSharedPreferences(String key, String data) {
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString(key, data);
+        editor.apply();
+    }
+
     private void getMe(String token, GetMeCallback callback) {
         AuthApi authService = RetrofitClient.getAuthApi();
         Call<MeResponse> call = authService.validateToken("Bearer " + token);
@@ -237,7 +236,13 @@ public class MainActivity extends AppCompatActivity{
                     Log.d("GetMe", "Role: " + userProfile.getRole());
                     Log.d("GetMe", "Image Path: " + userProfile.getImagePath());
 
-                    callback.onSuccess(userProfile.getName(), userProfile.getCountry());
+                    setMeDataToSharedPreferences("name", userProfile.getName());
+                    setMeDataToSharedPreferences("email", userProfile.getEmail());
+                    setMeDataToSharedPreferences("country", userProfile.getCountry());
+                    setMeDataToSharedPreferences("birth_date", userProfile.getBirthDate());
+                    setMeDataToSharedPreferences("image_path", userProfile.getImagePath());
+
+                    callback.onSuccess(userProfile.getName(), userProfile.getName(), userProfile.getCountry(), userProfile.getImagePath());
                 } else {
                     Log.e("GetMe", "Response error: " + response.code());
                     callback.onError("Response error: " + response.code());

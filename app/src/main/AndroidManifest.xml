@@ -41,7 +41,6 @@
             android:value="AIzaSyAqExkZ11SPsGg59tpsRl0HvaE-H-tNGTc" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MainActivity" android:launchMode="singleTop" />
-        <activity android:name=".SOSAlert" />
         <activity android:name=".PostCreationActivity" />
         <activity
             android:name=".LoginActivity"
@@ -53,6 +52,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ProfileEditActivity" />
     </application>
 
 </manifest>
