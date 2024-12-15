@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.glide)
     implementation(libs.swiperefreshlayout)
+    implementation(libs.circleImageView)
     annotationProcessor(libs.glide.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
