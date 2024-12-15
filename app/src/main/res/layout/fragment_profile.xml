@@ -49,12 +49,12 @@
             <TextView
                 android:id="@+id/tv_user_name"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/sora_bold"
                 android:gravity="center"
                 android:textColor="@color/green_900"
-                tools:text="Lorem Ipsum"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:fontFamily="@font/sora_bold" />
+                android:textSize="20sp"
+                tools:text="Lorem Ipsum" />
 
             <TextView
                 android:id="@+id/tv_user_email"
@@ -81,20 +81,19 @@
                 android:padding="15dp">
 
                 <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:src="@drawable/ic_logout" />
 
                 <TextView
                     android:id="@+id/tv_logout"
                     android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
+                    android:fontFamily="@font/sora_semibold"
                     android:text="Log Out"
                     android:textColor="@color/red_900"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/sora_semibold"
-                    />
+                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
 
