@@ -41,7 +41,8 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
         TextView placeTextView = view.findViewById(R.id.mountain_name);
         TextView heightTextView = view.findViewById(R.id.current_height);
