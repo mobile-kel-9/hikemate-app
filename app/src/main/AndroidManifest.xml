@@ -36,6 +36,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAqExkZ11SPsGg59tpsRl0HvaE-H-tNGTc" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".MainActivity" android:launchMode="singleTop" />
         <activity android:name=".SOSAlert" />
